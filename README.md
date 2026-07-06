@@ -1,2 +1,5 @@
-# soydani-front
-Project for soydani brand
+# front-project
+
+npm ci
+npm run build
+npm run start
