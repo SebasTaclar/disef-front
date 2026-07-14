@@ -6,11 +6,19 @@ export type Product = {
   price: number
   originalPrice?: number
   images: string[]
-  category: string // categoryId como string para consistencia interna
+  category: string
   status: 'available' | 'out-of-stock' | 'coming-soon'
   colors?: string[]
-  isShowcase?: boolean // Nueva propiedad del modelo Prisma
-  showcaseImage?: string // Nueva propiedad del modelo Prisma
+  isShowcase?: boolean
+  showcaseImage?: string
+  sku?: string
+  brand?: string
+  isAvailable?: boolean
+  showPrice?: boolean
+  allowQuote?: boolean
+  isFeatured?: boolean
+  isNew?: boolean
+  isOffer?: boolean
   createdAt: Date
   updatedAt?: Date
 }
@@ -22,11 +30,19 @@ export interface CreateProductRequest {
   price: number
   originalPrice?: number
   images: string[]
-  categoryId: number // Backend espera number
+  categoryId: number
   status?: 'available' | 'out-of-stock' | 'coming-soon'
   colors?: string[]
   isShowcase?: boolean
   showcaseImage?: string
+  sku?: string
+  brand?: string
+  isAvailable?: boolean
+  showPrice?: boolean
+  allowQuote?: boolean
+  isFeatured?: boolean
+  isNew?: boolean
+  isOffer?: boolean
 }
 
 // Request para actualizar producto (todos los campos opcionales)
@@ -41,6 +57,14 @@ export interface UpdateProductRequest {
   colors?: string[]
   isShowcase?: boolean
   showcaseImage?: string
+  sku?: string
+  brand?: string
+  isAvailable?: boolean
+  showPrice?: boolean
+  allowQuote?: boolean
+  isFeatured?: boolean
+  isNew?: boolean
+  isOffer?: boolean
 }
 
 // Response del backend al crear/obtener un producto
@@ -48,16 +72,24 @@ export interface CreateProductResponse {
   id: number
   name: string
   description: string
-  price: number // Backend puede devolver string si es Decimal
+  price: number
   originalPrice?: number
-  images: string // JSON string del backend
+  images: string
   categoryId: number
   status: string
-  colors?: string // JSON string del backend
+  colors?: string
   isShowcase: boolean
   showcaseImage?: string
-  createdAt: string // ISO 8601
-  updatedAt: string // ISO 8601
+  sku?: string
+  brand?: string
+  isAvailable?: boolean
+  showPrice?: boolean
+  allowQuote?: boolean
+  isFeatured?: boolean
+  isNew?: boolean
+  isOffer?: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 // Tipo para la respuesta de getProducts que puede venir en dos formatos:

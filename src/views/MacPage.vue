@@ -202,7 +202,7 @@
               :disabled="selectedProduct?.status !== 'available' || (selectedProduct?.colors && selectedProduct.colors.length > 0 && !modalSelectedColor)"
               class="modal-add-to-cart"
             >
-              {{ selectedProduct?.status === 'available' ? 'Agregar al carrito' : 'No disponible' }}
+              {{ selectedProduct?.status === 'available' ? 'Agregar a cotización' : 'No disponible' }}
             </button>
           </div>
         </div>
@@ -215,11 +215,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
-import { useCart } from '@/composables/useCart'
+import { useQuotation } from '@/composables/useQuotation'
 import type { Product } from '@/composables/useProducts'
 
 
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 
 useHead({
   title: 'MacBook Air, MacBook Pro | Apple Store Pro',
@@ -240,7 +240,7 @@ useHead({
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
 
-const { addToCart } = useCart()
+const { addToQuotation, openDrawer } = useQuotation()
 
 const isLoadingProducts = ref(true)
 
@@ -355,16 +355,19 @@ const addToCartFromModal = () => {
     // Obtener el nombre de la categoría
     const categoryName = categories.value.find(cat => cat.id === selectedProduct.value!.category)?.name || 'Producto'
 
-    // Crear el producto mapeado para el carrito
+    // Crear el producto mapeado para la cotización
     const mappedProduct = {
       ...selectedProduct.value,
       inStock: selectedProduct.value.status === 'available',
       image: selectedProduct.value.images[0],
-      category: categoryName // Reemplazar el ID por el nombre
+      category: categoryName, // Reemplazar el ID por el nombre
+      sku: 'N/A',
+      brand: 'N/A'
     }
 
     // Pasar el color seleccionado como tercer parámetro
-    addToCart(mappedProduct, 1, modalSelectedColor.value || undefined)
+    addToQuotation(mappedProduct, 1, modalSelectedColor.value || undefined)
+    openDrawer()
     closeModal()
   }
 }
@@ -771,52 +774,23 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 20px;
+  height: 280px;
+  overflow: hidden;
 }
 
 .product-image {
   width: 100%;
-  max-width: 400px;
-  height: auto;
+  height: 100%;
   object-fit: contain;
-  transition: all 0.4s ease;
-
-  /* Bordes visuales y profesionales */
-  border-radius: 24px;
-  border: 4px solid rgba(255, 255, 255, 0.2);
-  padding: 20px;
-  background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(15px);
-  box-shadow:
-    /* Sombra principal */
-    0 20px 50px rgba(0, 0, 0, 0.6),
-    /* Anillo exterior */
-    0 0 0 1px rgba(255, 255, 255, 0.25),
-    /* Anillo azul Apple */
-    0 0 0 2px rgba(10, 132, 255, 0.15),
-    /* Brillo interno superior */
-    inset 0 1px 2px rgba(255, 255, 255, 0.15),
-    /* Sombra interna inferior */
-    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  object-position: center;
+  transition: transform 0.4s ease;
 }
 
 .product-card-modern:hover .product-image {
   transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow:
-    /* Sombra más dramática */
-    0 25px 60px rgba(0, 0, 0, 0.7),
-    /* Anillo exterior brillante */
-    0 0 0 1px rgba(255, 255, 255, 0.4),
-    /* Anillo azul más visible */
-    0 0 0 3px rgba(10, 132, 255, 0.3),
-    /* Glow azul */
-    0 0 30px rgba(10, 132, 255, 0.2),
-    /* Brillos internos intensificados */
-    inset 0 2px 4px rgba(255, 255, 255, 0.2),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .product-details {

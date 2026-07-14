@@ -34,7 +34,7 @@
         <header class="category-hero">
           <div class="category-hero-text">
             <h1 class="category-title">Ofertas Especiales</h1>
-            <p class="category-description">Descubre nuestras mejores ofertas en joyería fina. Productos exclusivos con descuentos por tiempo limitado.</p>
+            <p class="category-description">Descubre nuestras mejores ofertas en soluciones industriales. Productos exclusivos con descuentos por tiempo limitado.</p>
           </div>
 
           <div class="category-hero-image">
@@ -110,10 +110,10 @@
               <div class="price">${{ product.price.toLocaleString() }} COP</div>
               <div v-if="hasRealDiscount(product)" class="original-price">${{ product.originalPrice!.toLocaleString() }} COP</div>
 
-              <button 
+              <button
                 v-if="product.status === 'available'"
-                class="add" 
-                type="button" 
+                class="add"
+                type="button"
                 @click.stop="addProductToCart(product)"
               >
                 <span class="cart">🛒</span>
@@ -135,23 +135,23 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
-import { useCart } from '@/composables/useCart'
+import { useQuotation } from '@/composables/useQuotation'
 import { useProductQuickView } from '@/composables/useProductQuickView'
 import type { Product } from '@/types/ProductType'
 
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 
 useHead({
-  title: 'Ofertas | Joyería Angelie',
+  title: 'Ofertas | DISEF Comercializadora Industrial',
   meta: [
     {
       name: 'description',
-      content: 'Descubre nuestras ofertas y productos con descuento en Joyería Angelie. Aprovecha precios especiales por tiempo limitado.'
+      content: 'Descubre nuestras ofertas y productos con descuento en DISEF Comercializadora Industrial. Aprovecha precios especiales por tiempo limitado.'
     },
-    { property: 'og:title', content: 'Ofertas | Joyería Angelie' },
-    { property: 'og:description', content: 'Productos con descuento en Joyería Angelie. Aprovecha precios especiales por tiempo limitado.' },
+    { property: 'og:title', content: 'Ofertas | DISEF Comercializadora Industrial' },
+    { property: 'og:description', content: 'Productos con descuento en DISEF Comercializadora Industrial. Aprovecha precios especiales por tiempo limitado.' },
     { property: 'og:image', content: '/images/logo.jpeg' },
-    { property: 'og:url', content: 'https://www.joyeriaangelie.com/ofertas' },
+    { property: 'og:url', content: 'https://www.disef.com.co/ofertas' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:image', content: '/images/logo.jpeg' }
   ]
@@ -159,7 +159,7 @@ useHead({
 
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
-const { addToCart } = useCart()
+const { addToQuotation, openDrawer } = useQuotation()
 const quickView = useProductQuickView()
 
 function openQuickView(product: Product) {
@@ -296,24 +296,27 @@ function clearFilters() {
 
 function addProductToCart(p: Product) {
   const categoryName = categories.value.find(cat => cat.id === p.category)?.name || 'Ofertas'
-  
+
   // Construir características del producto
   const characteristics: string[] = []
   if (p.colors && p.colors.length > 0) {
     // Agregar todos los colores disponibles
     characteristics.push(...p.colors)
   }
-  
-  addToCart({
+
+  addToQuotation({
     id: p.id,
     name: p.name,
+    sku: p.sku || 'N/A',
+    brand: p.brand || 'N/A',
     price: p.price,
     image: p.images?.[0] || '',
     category: categoryName,
     description: p.description,
     inStock: p.status === 'available',
     originalPrice: p.originalPrice
-  }, 1, p.colors?.[0], characteristics)
+  }, 1)
+  openDrawer()
 }
 
 onMounted(async () => {

@@ -35,6 +35,9 @@
           <div class="qv-title">{{ product.name }}</div>
           <div class="qv-meta">{{ categoryLabel }}</div>
 
+          <div v-if="product.brand" class="qv-brand">Marca: {{ product.brand }}</div>
+          <div v-if="product.sku" class="qv-sku">SKU: {{ product.sku }}</div>
+
           <div class="qv-price">
             <span class="qv-price-current">${{ formatPrice(product.price) }} COP</span>
             <span v-if="product.originalPrice" class="qv-price-original">${{ formatPrice(product.originalPrice) }} COP</span>
@@ -57,14 +60,24 @@
             </div>
           </div>
 
+          <div class="qv-observations">
+            <label class="obs-label">Observaciones (opcional)</label>
+            <input
+              v-model="observations"
+              type="text"
+              class="obs-input"
+              placeholder="Ej: Necesito talla XL, Curva C, Entrega urgente"
+            />
+          </div>
+
           <div class="qv-actions">
             <button
               type="button"
               class="qv-add"
               :disabled="isAddDisabled"
-              @click="addToCartFromModal"
+              @click="addToQuotationFromModal"
             >
-              {{ product.status === 'available' ? 'Agregar al carrito' : 'No disponible' }}
+              {{ product.status === 'available' ? 'Agregar a cotización' : 'No disponible' }}
             </button>
           </div>
 
@@ -79,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useCart, type Product as CartProduct } from '@/composables/useCart'
+import { useQuotation, type QuotationProduct } from '@/composables/useQuotation'
 import { useProducts } from '@/composables/useProducts'
 import type { Product } from '@/types/ProductType'
 
@@ -90,11 +103,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 
-const { addToCart } = useCart()
+const { addToQuotation, openDrawer } = useQuotation()
 const { categories, loadCategories, getCategoryById } = useProducts()
 
 const activeImageIndex = ref(0)
 const selectedColor = ref<string | null>(null)
+const observations = ref('')
 
 const categoryLabel = computed(() => {
   if (!props.product) return ''
@@ -142,25 +156,26 @@ const ensureCategoriesLoaded = async () => {
   }
 }
 
-const addToCartFromModal = () => {
+const addToQuotationFromModal = () => {
   if (!props.product) return
 
-  const mapped: CartProduct = {
-    ...props.product,
+  const mapped: QuotationProduct = {
+    id: props.product.id,
+    name: props.product.name,
+    sku: props.product.sku || 'N/A',
+    brand: props.product.brand || 'N/A',
+    price: props.product.price,
+    image: props.product.images?.[0] || '',
+    category: getCategoryById(String(props.product.category || ''))?.name || '',
+    description: props.product.description,
     inStock: props.product.status === 'available',
-    image: props.product.images?.[0] || ''
+    originalPrice: props.product.originalPrice
   }
 
-  // Construir características del producto
-  const characteristics: string[] = []
-  if (props.product.colors && props.product.colors.length > 0) {
-    // Agregar todos los colores disponibles
-    characteristics.push(...props.product.colors)
-  }
-  const colorRef = props.product.colors?.[0] || undefined
-
-  addToCart(mapped, 1, colorRef, characteristics)
+  addToQuotation(mapped, 1, observations.value || undefined)
+  observations.value = ''
   emit('close')
+  openDrawer()
 }
 
 const onKeyDown = (e: KeyboardEvent) => {

@@ -603,7 +603,7 @@ const goToHome = () => {
   font-size: 2rem;
   color: rgba(246, 245, 241, 0.95);
   margin: 0;
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   letter-spacing: 0.5px;
 }
 
@@ -629,7 +629,7 @@ const goToHome = () => {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
   color: rgba(246, 245, 241, 0.95);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   letter-spacing: 0.4px;
 }
 
@@ -772,7 +772,7 @@ const goToHome = () => {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
   color: rgba(246, 245, 241, 0.95);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   letter-spacing: 0.4px;
 }
 

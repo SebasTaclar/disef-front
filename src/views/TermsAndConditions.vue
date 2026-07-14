@@ -171,7 +171,7 @@ const acceptAndGoBack = () => {
 
 .title {
   margin: 0;
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   font-size: 2.1rem;
   letter-spacing: 0.2px;
   color: rgba(246, 245, 241, 0.98);
@@ -204,7 +204,7 @@ const acceptAndGoBack = () => {
 .section-title {
   margin: 0 0 0.9rem;
   color: rgb(201, 168, 89);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   font-weight: 800;
   letter-spacing: 0.2px;
   font-size: 1.25rem;

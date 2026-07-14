@@ -23,7 +23,7 @@
               v-model="formData.name"
               type="text"
               required
-              placeholder="Ej: iPhone 15 Pro"
+              placeholder="Ej: Breaker Termomagnético Acti9"
             />
           </div>
 
@@ -102,50 +102,47 @@
           </div>
         </div>
 
-        <!-- Imagen -->
+        <!-- Imagen del Producto -->
         <div class="form-section">
           <h4>Imagen del Producto</h4>
 
-          <div class="image-upload">
-            <div v-if="formData.image" class="image-preview">
-              <img :src="formData.image" alt="Preview" />
-              <button type="button" @click="removeImage" class="remove-image">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m18 6-12 12"/>
-                  <path d="m6 6 12 12"/>
-                </svg>
-              </button>
-            </div>
-
-            <div v-else class="upload-area" @click="triggerFileInput">
-              <div class="upload-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="9" cy="9" r="2"/>
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                </svg>
-              </div>
-              <p>Haz clic para subir una imagen</p>
-              <span>PNG, JPG, GIF hasta 5MB</span>
-            </div>
-
+          <div class="form-group">
+            <label for="imageUrl">URL de la imagen</label>
             <input
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              @change="handleFileUpload"
-              style="display: none"
+              id="imageUrl"
+              v-model="imageUrlInput"
+              type="url"
+              placeholder="https://ejemplo.com/imagen.jpg"
+              @input="updatePreview"
             />
           </div>
 
-          <div class="form-group">
-            <label for="imageUrl">O ingresa una URL de imagen</label>
-            <input
-              id="imageUrl"
-              v-model="formData.image"
-              type="url"
-              placeholder="https://ejemplo.com/imagen.jpg"
-            />
+          <!-- Vista Previa -->
+          <div class="preview-section" v-if="previewUrl">
+            <label>Vista Previa</label>
+            <div class="preview-container">
+              <img :src="previewUrl" alt="Vista previa" @error="onImageError" />
+            </div>
+          </div>
+
+          <!-- Error de imagen -->
+          <div class="preview-error" v-if="imageError">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4"/>
+              <path d="M12 16h.01"/>
+            </svg>
+            No se pudo cargar la imagen. Verifica la URL.
+          </div>
+
+          <!-- Placeholder -->
+          <div class="preview-placeholder" v-if="!previewUrl && !imageError">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="9" cy="9" r="2"/>
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+            </svg>
+            <p>Pega una URL de imagen para ver la vista previa</p>
           </div>
         </div>
 
@@ -195,8 +192,10 @@ const emit = defineEmits<{
   save: [productData: Product]
 }>()
 
-// Refs
-const fileInput = ref<HTMLInputElement>()
+// State
+const imageUrlInput = ref('')
+const previewUrl = ref('')
+const imageError = ref(false)
 
 // Form data
 const formData = reactive({
@@ -209,7 +208,22 @@ const formData = reactive({
   status: 'available' as Product['status']
 })
 
-// Métodos
+// Methods
+const updatePreview = () => {
+  imageError.value = false
+  if (!imageUrlInput.value) {
+    previewUrl.value = ''
+    formData.image = ''
+    return
+  }
+  previewUrl.value = imageUrlInput.value
+  formData.image = imageUrlInput.value
+}
+
+const onImageError = () => {
+  imageError.value = true
+}
+
 const handleSubmit = () => {
   const productData = {
     id: props.product?.id || '',
@@ -221,45 +235,7 @@ const handleSubmit = () => {
     category: formData.category,
     status: formData.status
   }
-
   emit('save', productData)
-}
-
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
-
-const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-
-  if (file) {
-    // Validar tamaño del archivo (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('El archivo es demasiado grande. Máximo 5MB.')
-      return
-    }
-
-    // Validar tipo de archivo
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor selecciona un archivo de imagen válido.')
-      return
-    }
-
-    // Crear URL temporal para preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      formData.image = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-const removeImage = () => {
-  formData.image = ''
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
 }
 
 // Watch para cargar datos del producto cuando se edita
@@ -272,10 +248,12 @@ watch(() => props.product, (newProduct) => {
     formData.image = newProduct.image
     formData.category = newProduct.category
     formData.status = newProduct.status
+    imageUrlInput.value = newProduct.image || ''
+    previewUrl.value = newProduct.image || ''
+    imageError.value = false
   }
 }, { immediate: true })
 
-// Limpiar formulario cuando no hay producto
 onMounted(() => {
   if (!props.product) {
     Object.assign(formData, {
@@ -287,6 +265,9 @@ onMounted(() => {
       category: '',
       status: 'available'
     })
+    imageUrlInput.value = ''
+    previewUrl.value = ''
+    imageError.value = false
   }
 })
 </script>
@@ -425,68 +406,62 @@ onMounted(() => {
   font-weight: 600;
 }
 
-/* Image upload */
-.image-upload {
-  margin-bottom: 1rem;
+/* Preview */
+.preview-section {
+  margin-top: 1rem;
 }
 
-.image-preview {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 1rem;
+.preview-section > label {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-primary);
+  margin-bottom: 0.75rem;
 }
 
-.image-preview img {
-  width: 200px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
+.preview-container {
+  background: #FFFFFF;
   border: 2px solid #e5e5e5;
-}
-
-.remove-image {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: var(--brand-danger);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 280px;
+  overflow: hidden;
 }
 
-.upload-area {
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  padding: 2rem;
+.preview-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.preview-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  color: #DC2626;
+  font-size: 0.85rem;
+}
+
+.preview-placeholder {
+  margin-top: 1rem;
+  background: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+  padding: 2.5rem;
   text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  color: #aaa;
 }
 
-.upload-area:hover {
-  border-color: var(--brand-success);
-  background: #f8fff9;
-}
-
-.upload-icon {
-  color: #ccc;
-  margin-bottom: 1rem;
-}
-
-.upload-area p {
-  font-weight: 600;
-  color: var(--brand-primary);
-  margin-bottom: 0.5rem;
-}
-
-.upload-area span {
-  color: #666;
+.preview-placeholder p {
+  margin: 0.75rem 0 0;
   font-size: 0.9rem;
 }
 
@@ -528,7 +503,6 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 1rem;

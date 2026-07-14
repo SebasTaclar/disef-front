@@ -1,12 +1,12 @@
 export const BRAND = {
-	name: 'Joyería Angelie'
+	name: 'DISEF Comercializadora Industrial'
 } as const
 
 export const SOCIALS = {
-	facebookUrl: 'https://www.facebook.com/joyeriaangelie/',
-	instagramUrl: 'https://www.instagram.com/joyeriaangelie/',
-	instagramHandle: '@joyeriaangelie',
-	tiktokUrl: 'https://www.tiktok.com/@joyeria_angelie'
+	facebookUrl: 'https://www.facebook.com/disefcolombia/',
+	instagramUrl: 'https://www.instagram.com/disefcolombia/',
+	instagramHandle: '@disefcolombia',
+	tiktokUrl: 'https://www.tiktok.com/@disefcolombia'
 } as const
 
 export const STORE = {

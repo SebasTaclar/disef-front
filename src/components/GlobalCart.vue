@@ -1,102 +1,105 @@
 <template>
-  <!-- Carrito global: oculto en Admin; botón solo si hay productos -->
-  <div v-if="!isAdminRoute" class="global-cart">
-    <button
-      v-if="shouldShowCartButton"
-      type="button"
-      class="floating-cart"
-      @click="handleToggleCart"
-      aria-label="Abrir carrito"
-    >
-      <div class="cart-icon" aria-hidden="true">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 6h15l-1.5 9H7.5L6 6Z" />
-          <path d="M6 6 5 3H2" />
-          <circle cx="9" cy="20" r="1.6" />
-          <circle cx="18" cy="20" r="1.6" />
-        </svg>
-        <span v-if="totalItems > 0" class="cart-badge">{{ totalItems }}</span>
-      </div>
-      <div class="cart-tooltip">Ver carrito de compras</div>
-    </button>
-
-    <!-- Modal del carrito -->
-    <div v-if="isCartOpen && totalItems > 0" class="cart-overlay" @click="closeCart">
-      <div class="cart-modal" @click.stop>
-        <div class="cart-header">
-          <h3>Tu Carrito</h3>
-          <button type="button" @click="closeCart" class="close-btn" aria-label="Cerrar carrito">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 6-12 12" />
-              <path d="m6 6 12 12" />
+  <div v-if="!isAdminRoute" class="global-quotation">
+    <!-- Drawer overlay -->
+    <div v-if="isDrawerOpen" class="drawer-overlay" @click="closeDrawer">
+      <div class="drawer-panel" @click.stop>
+        <!-- Header -->
+        <div class="drawer-header">
+          <div class="drawer-header-content">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <h3>Mi Cotización</h3>
+          </div>
+          <button type="button" @click="closeDrawer" class="drawer-close-btn" aria-label="Cerrar cotización">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m18 6-12 12"/>
+              <path d="m6 6 12 12"/>
             </svg>
           </button>
         </div>
 
-        <div class="cart-content">
-          <div v-if="cartItems.length === 0" class="empty-cart">
-            <p>Tu carrito está vacío</p>
+        <!-- Content -->
+        <div class="drawer-content">
+          <div v-if="quotationItems.length === 0" class="drawer-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <p>No hay productos en tu cotización</p>
+            <span>Agrega productos desde el catálogo</span>
           </div>
 
-          <div v-else class="cart-items">
-            <div v-for="item in cartItems" :key="`${item.id}-${item.selectedColor || 'default'}`" class="cart-item">
-              <img :src="item.image" :alt="item.name" />
-              <div class="item-details">
-                <h4 class="item-title">{{ item.name }}</h4>
-                <span v-if="item.category && isNaN(Number(item.category))" class="item-category">{{ item.category }}</span>
-                <div v-if="item.characteristics && item.characteristics.length > 0" class="item-characteristics">
-                  <span v-for="(char, index) in item.characteristics" :key="index" class="item-char-badge">
-                    {{ char }}
-                  </span>
-                </div>
-                <div class="item-price">${{ item.price.toLocaleString() }} COP</div>
-              </div>
+          <div v-else class="drawer-items">
+            <div v-for="item in quotationItems" :key="item.id" class="drawer-item">
+              <img :src="item.image" :alt="item.name" class="drawer-item-image" />
+              <div class="drawer-item-info">
+                <h4 class="drawer-item-name">{{ item.name }}</h4>
+                <span class="drawer-item-meta">Marca: {{ item.brand }}</span>
+                <span class="drawer-item-meta">SKU: {{ item.sku }}</span>
 
-              <div class="item-controls">
-                <div class="quantity-controls" aria-label="Cantidad">
+                <div class="drawer-item-quantity">
                   <button
                     type="button"
-                    class="quantity-btn minus"
-                    @click="updateQuantity(item.id, item.quantity - 1, item.selectedColor)"
+                    class="qty-btn qty-minus"
+                    @click="updateQuantity(item.id, item.quantity - 1)"
                     aria-label="Disminuir cantidad"
-                  >
-                    -
-                  </button>
-                  <span class="quantity-value">{{ item.quantity }}</span>
+                  >-</button>
+                  <span class="qty-value">{{ item.quantity }}</span>
                   <button
                     type="button"
-                    class="quantity-btn plus"
-                    @click="updateQuantity(item.id, item.quantity + 1, item.selectedColor)"
+                    class="qty-btn qty-plus"
+                    @click="updateQuantity(item.id, item.quantity + 1)"
                     aria-label="Aumentar cantidad"
-                  >
-                    +
-                  </button>
+                  >+</button>
                 </div>
 
-                <button
-                  type="button"
-                  class="remove-btn"
-                  @click="removeFromCart(item.id, item.selectedColor)"
-                  aria-label="Eliminar producto"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 6h18" />
-                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                  </svg>
-                </button>
+                <div class="drawer-item-obs">
+                  <input
+                    type="text"
+                    :value="item.observations"
+                    @input="updateObs(item.id, ($event.target as HTMLInputElement).value)"
+                    placeholder="Ej: Talla 10, Curva C"
+                    class="obs-input"
+                  />
+                </div>
               </div>
+
+              <button
+                type="button"
+                class="drawer-item-remove"
+                @click="removeFromQuotation(item.id)"
+                aria-label="Eliminar producto"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18"/>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
 
-        <div v-if="cartItems.length > 0" class="cart-footer">
-          <div class="cart-total-display">
-            <strong>Total: ${{ totalPrice.toLocaleString() }} COP</strong>
+        <!-- Footer -->
+        <div v-if="quotationItems.length > 0" class="drawer-footer">
+          <div class="drawer-summary">
+            <span class="summary-count">{{ totalItems }} productos seleccionados</span>
           </div>
-          <div class="cart-actions">
-            <button type="button" @click="clearCart" class="btn-clear">Limpiar carrito</button>
-            <button type="button" @click="goToCheckout" class="btn-checkout">Finalizar Pedido</button>
+          <div class="drawer-actions">
+            <button type="button" @click="closeDrawer" class="btn-continue">
+              Continuar explorando
+            </button>
+            <button type="button" @click="sendToWhatsApp" class="btn-send-quote">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.051 3.488"/>
+              </svg>
+              Solicitar cotización
+            </button>
           </div>
         </div>
       </div>
@@ -106,603 +109,383 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useCart } from '@/composables/useCart'
+import { useRoute } from 'vue-router'
+import { useQuotation } from '@/composables/useQuotation'
 
-const router = useRouter()
 const route = useRoute()
 
 const {
-  cartItems,
-  isCartOpen,
+  quotationItems,
+  isDrawerOpen,
   totalItems,
-  totalPrice,
-  removeFromCart,
+  removeFromQuotation,
   updateQuantity,
-  clearCart,
-  toggleCart,
-  closeCart
-} = useCart()
+  updateObservations,
+  closeDrawer,
+  sendToWhatsApp
+} = useQuotation()
 
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
-const shouldShowCartButton = computed(() => totalItems.value > 0)
 
-const handleToggleCart = () => {
-  if (totalItems.value <= 0) return
-  toggleCart()
+const updateObs = (productId: string, value: string) => {
+  updateObservations(productId, value)
 }
 
 watch(
   () => isAdminRoute.value,
   (isAdmin) => {
-    if (isAdmin) closeCart()
+    if (isAdmin) closeDrawer()
   },
   { immediate: true }
 )
-
-watch(
-  () => totalItems.value,
-  (count) => {
-    if (count <= 0) closeCart()
-  },
-  { immediate: true }
-)
-
-const goToCheckout = () => {
-  closeCart()
-  router.push('/checkout')
-}
 </script>
 
 <style scoped>
-.global-cart {
-  /* Paleta Angelie (misma línea usada en ProductStore) */
-  --cart-ink: #071e25;
-  --cart-gold: rgb(201, 168, 89);
-  --cart-gold-deep: rgb(215, 172, 67);
-  --cart-gold-glow: rgba(201, 168, 89, 0.35);
+.global-quotation {
+  --q-ink: #071e25;
+  --q-gold: rgb(201, 168, 89);
+  --q-gold-deep: rgb(215, 172, 67);
 }
 
-/* Carrito flotante */
-.floating-cart {
-  position: fixed;
-  bottom: 500px;
-  right: 20px;
-  background: var(--cart-gold);
-  color: var(--cart-ink);
-  padding: 1rem;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 10px 30px rgba(201, 168, 89, 0.28);
-  transition: all 0.3s ease;
-  z-index: 2500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  border: 1px solid rgba(7, 30, 37, 0.22);
-}
-
-.floating-cart:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 46px rgba(201, 168, 89, 0.32);
-}
-
-.cart-icon {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: var(--cart-ink);
-  color: rgba(255, 255, 255, 0.96);
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  border: 1px solid rgba(201, 168, 89, 0.35);
-}
-
-.cart-tooltip {
-  position: absolute;
-  right: 70px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(7, 30, 37, 0.92);
-  color: rgba(255, 255, 255, 0.96);
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  z-index: 2501;
-  border: 1px solid rgba(201, 168, 89, 0.28);
-}
-
-.cart-tooltip::after {
-  content: '';
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 6px solid transparent;
-  border-left-color: rgba(7, 30, 37, 0.92);
-}
-
-.floating-cart:hover .cart-tooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Modal del carrito */
-.cart-overlay {
+/* Overlay */
+.drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
 }
 
-.cart-modal {
-  background: var(--cart-ink);
-  border-radius: 20px;
-  max-width: 900px;
-  width: 100%;
-  max-height: 85vh;
-  overflow: hidden;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Panel */
+.drawer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 90vw;
+  height: 100vh;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(201, 168, 89, 0.22);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.cart-header {
-  padding: 1.5rem 1.5rem 1rem;
-  border-bottom: 1px solid rgba(201, 168, 89, 0.18);
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Header */
+.drawer-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #0b0b0b;
+  color: #ffffff;
 }
 
-.cart-header h3 {
+.drawer-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.drawer-header h3 {
   margin: 0;
-  font-size: 1.45rem;
-  color: rgba(255, 255, 255, 0.96);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
-.close-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(201, 168, 89, 0.2);
+.drawer-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 12px;
-  transition: background 0.2s ease, transform 0.2s ease;
-  color: rgba(255, 255, 255, 0.92);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
 }
 
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+.drawer-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.cart-content {
+/* Content */
+.drawer-content {
   flex: 1;
   overflow-y: auto;
   padding: 1rem 1.5rem;
 }
 
-.empty-cart {
+.drawer-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   text-align: center;
-  padding: 3rem 0;
-  color: rgba(255, 255, 255, 0.75);
+  color: #666;
+  gap: 0.5rem;
 }
 
-.cart-items {
+.empty-icon {
+  opacity: 0.3;
+  margin-bottom: 0.5rem;
+}
+
+.drawer-empty p {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.drawer-empty span {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Items */
+.drawer-items {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.cart-item {
+.drawer-item {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  border: 1px solid rgba(201, 168, 89, 0.14);
+  background: #f8f8f8;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  position: relative;
+  transition: border-color 0.2s ease;
 }
 
-.cart-item img {
-  width: 80px;
-  height: 80px;
+.drawer-item:hover {
+  border-color: rgba(201, 168, 89, 0.4);
+}
+
+.drawer-item-image {
+  width: 70px;
+  height: 70px;
   object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid rgba(201, 168, 89, 0.18);
-}
-
-.item-details {
-  flex: 1;
-}
-
-.item-details .item-title {
-  margin: 0 0 0.25rem;
-  color: rgba(255, 255, 255, 0.96);
-  text-transform: uppercase;
-}
-
-.item-details h4 {
-  margin: 0 0 0.25rem;
-  color: rgba(255, 255, 255, 0.96);
-}
-
-.item-category {
-  font-size: 0.9rem;
-  color: rgba(201, 168, 89, 0.98);
-  font-weight: 700;
-  text-transform: lowercase;
-}
-
-.item-color {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.86);
-  background: rgba(201, 168, 89, 0.14);
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  display: inline-block;
-  margin-top: 0.3rem;
-  font-weight: 600;
-  border: 1px solid rgba(201, 168, 89, 0.2);
-}
-
-.item-characteristics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.4rem;
-}
-
-.item-char-badge {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(201, 168, 89, 0.18);
-  padding: 0.2rem 0.55rem;
   border-radius: 10px;
-  display: inline-block;
-  font-weight: 600;
-  border: 1px solid rgba(201, 168, 89, 0.25);
-  text-transform: lowercase;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.item-price {
-  font-weight: 800;
-  color: rgba(201, 168, 89, 0.98);
-  margin-top: 0.45rem;
-}
-
-.item-controls {
+.drawer-item-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.drawer-item-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.drawer-item-meta {
+  font-size: 0.78rem;
+  color: #777;
+}
+
+.drawer-item-quantity {
+  display: flex;
   align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.qty-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  color: #333;
+}
+
+.qty-btn:hover {
+  border-color: var(--q-gold);
+  color: var(--q-gold);
+}
+
+.qty-plus {
+  background: var(--q-gold);
+  border-color: var(--q-gold);
+  color: #0b0b0b;
+}
+
+.qty-plus:hover {
+  background: var(--q-gold-deep);
+}
+
+.qty-value {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+
+.drawer-item-obs {
+  margin-top: 0.3rem;
+}
+
+.obs-input {
+  width: 100%;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #333;
+  background: #fff;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.obs-input:focus {
+  outline: none;
+  border-color: var(--q-gold);
+}
+
+.obs-input::placeholder {
+  color: #aaa;
+}
+
+.drawer-item-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 0.25rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.drawer-item-remove:hover {
+  color: #e53935;
+  background: rgba(229, 57, 53, 0.08);
+}
+
+/* Footer */
+.drawer-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.drawer-summary {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.summary-count {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.drawer-actions {
+  display: flex;
+  flex-direction: column;
   gap: 0.6rem;
 }
 
-.quantity-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(201, 168, 89, 0.16);
-  padding: 0.35rem 0.5rem;
-  border-radius: 12px;
-}
-
-.quantity-value {
-  min-width: 20px;
-  text-align: center;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.quantity-btn {
+.btn-continue,
+.btn-send-quote {
   border: none;
-  width: 28px;
-  height: 28px;
   border-radius: 10px;
+  padding: 0.8rem 1rem;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-  font-weight: 900;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.quantity-btn.minus {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.quantity-btn.plus {
-  background: rgba(201, 168, 89, 0.92);
-  color: var(--cart-ink);
-}
-
-.quantity-btn:hover {
-  transform: translateY(-1px);
-}
-
-.remove-btn {
-  background: rgba(201, 168, 89, 0.18);
-  color: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(201, 168, 89, 0.22);
-  border-radius: 12px;
-  width: 34px;
-  height: 34px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.remove-btn:hover {
-  background: rgba(215, 172, 67, 0.28);
-  transform: scale(1.06);
-}
-
-.cart-footer {
-  padding: 1rem 1.5rem 1.5rem;
-  border-top: 1px solid rgba(201, 168, 89, 0.18);
-}
-
-.cart-total-display {
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
   text-align: center;
-  margin-bottom: 1.25rem;
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.96);
-  font-weight: 800;
 }
 
-.cart-actions {
+.btn-continue {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.btn-continue:hover {
+  background: #e5e5e5;
+}
+
+.btn-send-quote {
+  background: #25d366;
+  color: #fff;
   display: flex;
-  gap: 0.75rem;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.btn-clear,
-.btn-checkout {
-  border: 1px solid rgba(201, 168, 89, 0.28);
-  border-radius: 12px;
-  padding: 0.75rem 1.2rem;
-  cursor: pointer;
-  font-weight: 800;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.btn-clear {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.btn-checkout {
-  background: rgba(201, 168, 89, 0.92);
-  color: var(--cart-ink);
-}
-
-.btn-clear:hover,
-.btn-checkout:hover {
+.btn-send-quote:hover {
+  background: #20b858;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
 
-@media (max-width: 768px) {
-  .cart-overlay {
-    padding: 0.5rem;
-  }
-
-  .floating-cart {
-    bottom: 420px;
-    right: 16px;
-    width: 56px;
-    height: 56px;
-  }
-
-  .cart-modal {
-    max-height: 95vh;
-    border-radius: 16px;
-  }
-
-  .cart-header {
-    padding: 1rem;
-  }
-
-  .cart-header h3 {
-    font-size: 1.2rem;
-  }
-
-  .cart-content {
-    padding: 0.75rem;
-  }
-
-  .cart-item {
-    flex-wrap: wrap;
-    padding: 0.75rem;
-    gap: 0.75rem;
-  }
-
-  .cart-item img {
-    width: 70px;
-    height: 70px;
-  }
-
-  .item-details {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .item-details h4 {
-    font-size: 0.95rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .item-category {
-    font-size: 0.8rem;
-  }
-
-  .item-color {
-    font-size: 0.75rem;
-    padding: 0.15rem 0.5rem;
-  }
-
-  .item-price {
-    font-size: 0.95rem;
-  }
-
-  .item-controls {
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .quantity-controls {
-    gap: 0.4rem;
-    padding: 0.3rem 0.4rem;
-  }
-
-  .quantity-btn {
-    width: 26px;
-    height: 26px;
-    font-size: 0.9rem;
-  }
-
-  .remove-btn {
-    width: 32px;
-    height: 32px;
-  }
-
-  .cart-footer {
-    padding: 1rem;
-  }
-
-  .cart-total-display {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-
-  .cart-actions {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .btn-clear,
-  .btn-checkout {
-    width: 100%;
-    padding: 0.75rem 1rem;
-  }
-}
-
+/* Responsive */
 @media (max-width: 480px) {
-  .cart-overlay {
-    padding: 0.25rem;
+  .drawer-panel {
+    width: 100%;
+    max-width: 100%;
   }
 
-  .cart-modal {
-    max-height: 97vh;
-    border-radius: 12px;
+  .drawer-header {
+    padding: 1rem;
   }
 
-  .cart-header {
+  .drawer-content {
     padding: 0.75rem;
   }
 
-  .cart-header h3 {
-    font-size: 1.1rem;
+  .drawer-item {
+    padding: 0.75rem;
   }
 
-  .cart-content {
-    padding: 0.5rem;
-  }
-
-  .cart-item {
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-
-  .cart-item img {
+  .drawer-item-image {
     width: 60px;
     height: 60px;
   }
 
-  .item-details h4 {
-    font-size: 0.85rem;
-  }
-
-  .item-category {
-    font-size: 0.75rem;
-  }
-
-  .item-price {
-    font-size: 0.85rem;
-  }
-
-  .quantity-controls {
-    gap: 0.3rem;
-    padding: 0.25rem 0.35rem;
-  }
-
-  .quantity-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.85rem;
-  }
-
-  .quantity-value {
-    font-size: 0.85rem;
-    min-width: 18px;
-  }
-
-  .remove-btn {
-    width: 28px;
-    height: 28px;
-  }
-
-  .remove-btn svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .cart-footer {
-    padding: 0.75rem 0.5rem;
-  }
-
-  .cart-total-display {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .btn-clear,
-  .btn-checkout {
-    padding: 0.65rem 0.85rem;
-    font-size: 0.9rem;
+  .drawer-footer {
+    padding: 0.75rem 1rem 1rem;
   }
 }
 </style>

@@ -28,7 +28,7 @@ const messages = {
 			explore: 'EXPLORAR COLECCIÓN',
 			learnMore: 'CONOCER MÁS',
 			scrollDown: 'Desliza',
-			logoAlt: 'Angelie Joyería'
+			logoAlt: 'DISEF Comercializadora Industrial'
 		},
 		visit: {
 			title: 'Visítanos',
@@ -39,12 +39,12 @@ const messages = {
 			hoursLabel: 'Horarios'
 		},
 		footer: {
-			description: 'Elegancia y distinción en cada pieza. Más de 10 años creando momentos inolvidables.',
+			description: 'Soluciones industriales y eléctricas con calidad, seguridad y respaldo técnico.',
 			followUs: 'Síguenos',
 			quickLinks: 'Enlaces Rápidos',
 			customerSupport: 'Atención al Cliente',
-			madeWith: 'Elegancia y distinción en cada pieza ✨',
-			copyright: '© {year} Joyería Angelie. Todos los derechos reservados.',
+			madeWith: 'Soluciones para obra, planta y mantenimiento ✨',
+			copyright: '© {year} DISEF Comercializadora Industrial. Todos los derechos reservados.',
 			links: {
 				products: 'Productos',
 				categories: 'Categorías',
@@ -58,7 +58,7 @@ const messages = {
 		},
 		whatsapp: {
 			defaultMessage:
-				'Hola! Me interesa conocer más sobre los productos de Joyería Angelie. ¿Me pueden brindar más información?'
+				'Hola! Me interesa conocer más sobre los productos y soluciones de DISEF Comercializadora Industrial. ¿Me pueden brindar más información?'
 		},
 		store: {
 			pickup: {
@@ -76,51 +76,18 @@ const messages = {
 			instagramFollow: 'Síguenos en Instagram para ver más novedades',
 			instagramLabel: 'Instagram'
 		},
-		checkout: {
-			back: 'Volver a la tienda',
-			title: 'Finalizar pedido',
-			summaryTitle: 'Resumen del pedido',
-			emptyCart: 'No hay productos en el carrito',
-			goStore: 'Ir a la tienda',
-			subtotal: 'Subtotal',
-			shipping: 'Envío',
-			shippingDeliveryValue: '$15,000',
-			shippingPickupValue: 'Gratis',
-			total: 'Total',
-			continueShopping: 'Seguir comprando',
-			contactTitle: 'Contacto',
-			fullName: 'Nombre completo',
-			fullNamePlaceholder: 'Escribe tu nombre',
-			email: 'Correo electrónico',
-			emailPlaceholder: 'ejemplo@correo.com',
-			idNumber: 'Número de cédula',
-			idNumberPlaceholder: 'Ejm: 1234567890',
-			phone: 'Teléfono',
-			phonePlaceholder: 'Ejm: 300 XXX XXXX',
-			termsAcceptPrefix: 'He leído y acepto los',
-			termsAcceptLink: 'términos y condiciones',
-			deliveryTitle: 'Entrega',
-			deliveryHome: 'Envío a domicilio',
-			deliveryPickup: 'Recoger en tienda',
-			address: 'Dirección',
-			addressPlaceholder: 'Ejm: Calle 123 # XX-XX',
-			city: 'Ciudad',
-			cityPlaceholder: 'Escribe la ciudad de destino',
-			deliveryPhone: 'Teléfono de entrega',
-			pickupLocationTitle: 'Nuestra ubicación',
-			confirm: 'Confirmar pedido',
-			processing: 'Procesando…',
-			errors: {
-				nameRequired: 'El nombre es requerido',
-				emailRequired: 'El correo electrónico es requerido',
-				emailInvalid: 'Correo electrónico inválido',
-				idRequired: 'El número de cédula es requerido',
-				phoneRequired: 'El teléfono es requerido',
-				addressRequired: 'La dirección es requerida',
-				cityRequired: 'La ciudad es requerida',
-				deliveryPhoneRequired: 'El teléfono de entrega es requerido',
-				termsRequired: 'Debes aceptar los términos y condiciones'
-			}
+		quotation: {
+			title: 'Mi Cotización',
+			empty: 'No hay productos en tu cotización',
+			continueExploring: 'Continuar explorando',
+			sendQuote: 'Solicitar cotización',
+			addToQuote: 'Agregar a cotización',
+			productsSelected: '{count} productos seleccionados',
+			observations: 'Observaciones',
+			observationsPlaceholder: 'Ej: Talla 10, Color amarillo, Curva C',
+			remove: 'Eliminar',
+			clearAll: 'Limpiar cotización',
+			yourQuote: 'Tu Cotización'
 		},
 		terms: {
 			back: 'Volver',
@@ -133,7 +100,7 @@ const messages = {
 				{
 					title: '1. Información general',
 					paragraphs: [
-						'Estos Términos y Condiciones regulan el uso del sitio web y la compra de productos ofrecidos por Joyería Angelie.',
+						'Estos Términos y Condiciones regulan el uso del sitio web y la compra de productos y soluciones ofrecidos por DISEF Comercializadora Industrial.',
 						'Al navegar, registrarte o realizar una compra, aceptas estos términos. Si no estás de acuerdo, por favor no uses el sitio.',
 						'Podemos actualizar estos términos cuando sea necesario. La versión vigente será la publicada en esta página.'
 					]
@@ -239,7 +206,7 @@ const messages = {
 			explore: 'EXPLORE COLLECTION',
 			learnMore: 'LEARN MORE',
 			scrollDown: 'Scroll',
-			logoAlt: 'Angelie Jewelry'
+			logoAlt: 'DISEF Commercial Industrial'
 		},
 		visit: {
 			title: 'Visit us',
@@ -250,12 +217,12 @@ const messages = {
 			hoursLabel: 'Hours'
 		},
 		footer: {
-			description: 'Elegance and distinction in every piece. More than 10 years creating unforgettable moments.',
+			description: 'Industrial and electrical solutions with quality, safety and technical support.',
 			followUs: 'Follow us',
 			quickLinks: 'Quick Links',
 			customerSupport: 'Customer Support',
-			madeWith: 'Elegance and distinction in every piece ✨',
-			copyright: '© {year} Angelie Jewelry. All rights reserved.',
+			madeWith: 'Solutions for worksites, plants and maintenance ✨',
+			copyright: '© {year} DISEF Commercial Industrial. All rights reserved.',
 			links: {
 				products: 'Products',
 				categories: 'Categories',
@@ -268,7 +235,7 @@ const messages = {
 			}
 		},
 		whatsapp: {
-			defaultMessage: 'Hi! I would like to know more about Angelie Jewelry products. Can you share more information?'
+			defaultMessage: 'Hi! I would like to know more about DISEF Comercializadora Industrial products and solutions. Can you share more information?'
 		},
 		store: {
 			pickup: {
@@ -286,51 +253,18 @@ const messages = {
 			instagramFollow: 'Follow us on Instagram for more news',
 			instagramLabel: 'Instagram'
 		},
-		checkout: {
-			back: 'Back to store',
-			title: 'Checkout',
-			summaryTitle: 'Order summary',
-			emptyCart: 'Your cart is empty',
-			goStore: 'Go to store',
-			subtotal: 'Subtotal',
-			shipping: 'Shipping',
-			shippingDeliveryValue: '$15,000',
-			shippingPickupValue: 'Free',
-			total: 'Total',
-			continueShopping: 'Continue shopping',
-			contactTitle: 'Contact',
-			fullName: 'Full name',
-			fullNamePlaceholder: 'Type your name',
-			email: 'Email',
-			emailPlaceholder: 'name@email.com',
-			idNumber: 'ID number',
-			idNumberPlaceholder: 'e.g. 1234567890',
-			phone: 'Phone',
-			phonePlaceholder: 'e.g. +57 300 XXX XXXX',
-			termsAcceptPrefix: 'I have read and accept the',
-			termsAcceptLink: 'terms and conditions',
-			deliveryTitle: 'Delivery',
-			deliveryHome: 'Home delivery',
-			deliveryPickup: 'Store pickup',
-			address: 'Address',
-			addressPlaceholder: 'e.g. Street 123 # XX-XX',
-			city: 'City',
-			cityPlaceholder: 'Type the destination city',
-			deliveryPhone: 'Delivery phone',
-			pickupLocationTitle: 'Pickup location',
-			confirm: 'Place order',
-			processing: 'Processing…',
-			errors: {
-				nameRequired: 'Name is required',
-				emailRequired: 'Email is required',
-				emailInvalid: 'Invalid email',
-				idRequired: 'ID number is required',
-				phoneRequired: 'Phone is required',
-				addressRequired: 'Address is required',
-				cityRequired: 'City is required',
-				deliveryPhoneRequired: 'Delivery phone is required',
-				termsRequired: 'You must accept the terms and conditions'
-			}
+		quotation: {
+			title: 'My Quote',
+			empty: 'No products in your quote',
+			continueExploring: 'Continue browsing',
+			sendQuote: 'Request quote',
+			addToQuote: 'Add to quote',
+			productsSelected: '{count} products selected',
+			observations: 'Notes',
+			observationsPlaceholder: 'E.g: Size 10, Yellow color, Curve C',
+			remove: 'Remove',
+			clearAll: 'Clear quote',
+			yourQuote: 'Your Quote'
 		},
 		terms: {
 			back: 'Back',
@@ -343,7 +277,7 @@ const messages = {
 				{
 					title: '1. General information',
 					paragraphs: [
-						'These Terms & Conditions govern the use of the website and the purchase of products offered by Angelie Jewelry.',
+						'These Terms & Conditions govern the use of the website and the purchase of products and solutions offered by DISEF Comercializadora Industrial.',
 						'By browsing, signing up, or placing an order, you agree to these terms. If you do not agree, please do not use the site.',
 						'We may update these terms when needed. The current version is the one published on this page.'
 					]

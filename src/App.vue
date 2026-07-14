@@ -1,79 +1,73 @@
 <template>
-  <header>
-    <nav class="navbar">
-      <!-- Logo y marca -->
-      <RouterLink class="link-navbar home" to="/" @click="closeMobileMenu">
-        <div class="brand-container">
+  <header v-if="showUtilityBar" class="site-header">
+    <div class="utility-bar">
+      <div class="utility-left">
+        <i class="fas fa-bolt" aria-hidden="true"></i>
+        <span>Más de 20 años suministrando soluciones eléctricas e industriales</span>
+      </div>
+      <div class="utility-right">
+        <span><i class="fas fa-headset" aria-hidden="true"></i> Asesoría técnica</span>
+        <span><i class="fas fa-truck" aria-hidden="true"></i> Envíos a todo el país</span>
+        <span><i class="fas fa-phone" aria-hidden="true"></i> Línea nacional: 322 9118168</span>
+      </div>
+    </div>
 
-          <div class="brand-info">
-            <div class="brand-title"><span class="highlight">JOYERÍA ANGELIE</span></div>
-            <div class="brand-tagline">{{ t('brand.tagline') }}</div>
-          </div>
-        </div>
+    <nav class="header-main">
+      <RouterLink class="brand-container" to="/" @click="closeMobileMenu">
+        <img class="brand-logo-image" src="/images/logof.png" alt="DISEF Comercializadora Industrial" />
       </RouterLink>
 
-      <!-- Navegación principal -->
-      <div class="nav-menu desktop-nav">
-        <RouterLink to="/anillos" class="nav-link" :class="{ active: isCurrentRoute('/anillos') }" @click="closeMobileMenu">{{ t('nav.rings') }}</RouterLink>
-        <RouterLink to="/collares" class="nav-link" :class="{ active: isCurrentRoute('/collares') }" @click="closeMobileMenu">{{ t('nav.necklaces') }}</RouterLink>
-        <RouterLink to="/aretes" class="nav-link" :class="{ active: isCurrentRoute('/aretes') }" @click="closeMobileMenu">{{ t('nav.earings') }}</RouterLink>
-        <RouterLink to="/pulseras" class="nav-link" :class="{ active: isCurrentRoute('/pulseras') }" @click="closeMobileMenu">{{ t('nav.bracelets') }}</RouterLink>
-        <RouterLink to="/esmeraldas" class="nav-link" :class="{ active: isCurrentRoute('/esmeraldas') }" @click="closeMobileMenu">{{ t('nav.emeralds') }}</RouterLink>
-        <RouterLink to="/ofertas" class="nav-link" :class="{ active: isCurrentRoute('/ofertas') }" @click="closeMobileMenu">{{ t('nav.offers') }}</RouterLink>
-      </div>
+      <form v-if="showHeaderSearch" class="header-search desktop-only" @submit.prevent="openSearch">
+        <button type="button" class="search-category" @click="openSearch">Todas las categorías</button>
+        <input
+          class="search-input"
+          type="search"
+          placeholder="Buscar productos, marcas o categorías..."
+          aria-label="Buscar productos"
+          readonly
+          @focus="openSearch"
+        />
+        <button type="submit" class="search-submit" aria-label="Buscar">
+          <i class="fas fa-search" aria-hidden="true"></i>
+        </button>
+      </form>
 
-      <!-- Controles de usuario -->
-      <div class="nav-controls desktop-nav">
-        <button
-          v-if="showHeaderSearch"
-          type="button"
-          class="search-toggle"
-          aria-label="Abrir buscador"
-          title="Buscar"
-          @click="openSearch"
-        >
-          <svg class="search-toggle-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path
-              fill="currentColor"
-              d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm8.707 17.293-4.387-4.387a9 9 0 1 0-1.414 1.414l4.387 4.387a1 1 0 0 0 1.414-1.414z"
-            />
-          </svg>
+      <div class="nav-actions desktop-only">
+        <RouterLink v-if="!isLoggedIn" class="account-chip" to="/login">
+          <i class="fas fa-user" aria-hidden="true"></i>
+          <span>
+            <small>Iniciar sesión</small>
+            <strong>Mi cuenta</strong>
+          </span>
+        </RouterLink>
+
+        <RouterLink v-else-if="isAdmin" class="account-chip" to="/admin/products">
+          <i class="fas fa-user-shield" aria-hidden="true"></i>
+          <span>
+            <small>Panel admin</small>
+            <strong>Mi cuenta</strong>
+          </span>
+        </RouterLink>
+
+        <button v-else type="button" class="account-chip" @click="logout">
+          <i class="fas fa-user" aria-hidden="true"></i>
+          <span>
+            <small>{{ username || 'Hola' }}</small>
+            <strong>Mi cuenta</strong>
+          </span>
         </button>
 
-        <div class="lang-switch" aria-label="Language switch">
-          <button
-            class="lang-btn"
-            :class="{ active: locale === 'en' }"
-            type="button"
-            :aria-label="locale === 'en' ? 'Language: English (selected)' : 'Switch to English'"
-            title="English"
-            @click="setLanguage('en')"
-          >
-            <img class="flag-icon" src="/icons/flags/us.svg" alt="" aria-hidden="true" />
-            <span class="sr-only">English</span>
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: locale === 'es' }"
-            type="button"
-            :aria-label="locale === 'es' ? 'Idioma: Español (seleccionado)' : 'Cambiar a Español'"
-            title="Español"
-            @click="setLanguage('es')"
-          >
-            <img class="flag-icon" src="/icons/flags/co.svg" alt="" aria-hidden="true" />
-            <span class="sr-only">Español</span>
-          </button>
-        </div>
-
-        <RouterLink v-if="!isLoggedIn" class="btn access-btn" to="/login">{{ t('auth.access') }}</RouterLink>
-        <RouterLink v-if="isLoggedIn && isAdmin" class="btn admin-btn" to="/admin/products">{{ t('auth.adminPanel') }}</RouterLink>
-        <RouterLink v-if="isLoggedIn" @click="logout" class="btn logout-btn" to="/">{{ t('auth.logout') }}</RouterLink>
-        <div v-if="isLoggedIn" class="user-greeting">
-          <span>{{ username }}</span>
-        </div>
+        <button type="button" class="cart-summary" @click="toggleDrawer">
+          <span class="cart-summary-icon">
+            <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+            <span v-if="totalItems > 0" class="cart-summary-badge">{{ totalItems }}</span>
+          </span>
+          <span class="cart-summary-text">
+            <small>Mi Cotización</small>
+          </span>
+        </button>
       </div>
 
-      <!-- Menu hamburguesa para mobile -->
       <div class="mobile-header-controls">
         <button
           v-if="showHeaderSearch"
@@ -91,67 +85,65 @@
           </svg>
         </button>
 
-        <div class="lang-switch mobile-header" aria-label="Language switch">
-          <button
-            class="lang-btn"
-            :class="{ active: locale === 'en' }"
-            type="button"
-            :aria-label="locale === 'en' ? 'Language: English (selected)' : 'Switch to English'"
-            title="English"
-            @click="setLanguage('en')"
-          >
-            <img class="flag-icon" src="/icons/flags/us.svg" alt="" aria-hidden="true" />
-            <span class="sr-only">English</span>
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: locale === 'es' }"
-            type="button"
-            :aria-label="locale === 'es' ? 'Idioma: Español (seleccionado)' : 'Cambiar a Español'"
-            title="Español"
-            @click="setLanguage('es')"
-          >
-            <img class="flag-icon" src="/icons/flags/co.svg" alt="" aria-hidden="true" />
-            <span class="sr-only">Español</span>
-          </button>
-        </div>
+        <button type="button" class="mobile-cart-btn" @click="toggleDrawer" aria-label="Abrir cotización">
+          <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+          <span v-if="totalItems > 0" class="mobile-cart-badge">{{ totalItems }}</span>
+        </button>
       </div>
 
-      <button class="hamburger-menu" @click="toggleMobileMenu" :class="{ 'active': isMobileMenuOpen }">
+      <button class="hamburger-menu" @click="toggleMobileMenu" :class="{ active: isMobileMenuOpen }">
         <span></span>
         <span></span>
         <span></span>
       </button>
+    </nav>
 
-      <!-- Menu mobile desplegable -->
-      <div class="mobile-menu" :class="{ 'active': isMobileMenuOpen }">
-        <div class="mobile-menu-content">
-          <div class="mobile-nav-links">
-            <RouterLink to="/anillos" class="mobile-link" :class="{ active: isCurrentRoute('/anillos') }" @click="closeMobileMenu">{{ t('nav.rings') }}</RouterLink>
-            <RouterLink to="/collares" class="mobile-link" :class="{ active: isCurrentRoute('/collares') }" @click="closeMobileMenu">{{ t('nav.necklaces') }}</RouterLink>
-            <RouterLink to="/aretes" class="mobile-link" :class="{ active: isCurrentRoute('/aretes') }" @click="closeMobileMenu">{{ t('nav.earings') }}</RouterLink>
-            <RouterLink to="/pulseras" class="mobile-link" :class="{ active: isCurrentRoute('/pulseras') }" @click="closeMobileMenu">{{ t('nav.bracelets') }}</RouterLink>
-            <RouterLink to="/esmeraldas" class="mobile-link" :class="{ active: isCurrentRoute('/esmeraldas') }" @click="closeMobileMenu">{{ t('nav.emeralds') }}</RouterLink>
-            <RouterLink to="/ofertas" class="mobile-link" :class="{ active: isCurrentRoute('/ofertas') }" @click="closeMobileMenu">{{ t('nav.offers') }}</RouterLink>
-          </div>
+    <div class="nav-strip desktop-only">
+      <div class="nav-menu">
+        <RouterLink to="/" class="nav-link" :class="{ active: isCurrentRoute('/') }" @click="closeMobileMenu">Inicio</RouterLink>
+        <RouterLink to="/productos" class="nav-link nav-link--products" :class="{ active: isCurrentRoute('/productos') }" @click="closeMobileMenu">
+          Productos <i class="fas fa-chevron-down header-caret" aria-hidden="true"></i>
+        </RouterLink>
+        <RouterLink to="/marcas" class="nav-link" :class="{ active: isCurrentRoute('/marcas') }" @click="closeMobileMenu">Marcas</RouterLink>
+        <RouterLink to="/industrias" class="nav-link" :class="{ active: isCurrentRoute('/industrias') }" @click="closeMobileMenu">Industrias</RouterLink>
+        <RouterLink to="/promociones" class="nav-link" :class="{ active: isCurrentRoute('/promociones') }" @click="closeMobileMenu">Promociones</RouterLink>
+        <RouterLink to="/nosotros" class="nav-link" :class="{ active: isCurrentRoute('/nosotros') }" @click="closeMobileMenu">Nosotros</RouterLink>
+        <RouterLink to="/blog" class="nav-link" :class="{ active: isCurrentRoute('/blog') }" @click="closeMobileMenu">Blog</RouterLink>
+        <RouterLink to="/contacto" class="nav-link" :class="{ active: isCurrentRoute('/contacto') }" @click="closeMobileMenu">Contacto</RouterLink>
+      </div>
+    </div>
 
-          <div class="mobile-controls">
-            <RouterLink v-if="!isLoggedIn" class="mobile-btn access-btn" to="/login" @click="closeMobileMenu">
-              {{ t('auth.access') }}
-            </RouterLink>
-            <div v-if="isLoggedIn" class="mobile-user-greeting">
-              <span>{{ t('auth.hello', { name: username }) }}</span>
-            </div>
-            <RouterLink v-if="isLoggedIn && isAdmin" class="mobile-btn admin-btn" to="/admin/products" @click="closeMobileMenu">
-              {{ t('auth.adminPanel') }}
-            </RouterLink>
-            <button v-if="isLoggedIn" @click="handleMobileLogout" class="mobile-btn logout-btn">
-              {{ t('auth.logout') }}
-            </button>
+    <div class="mobile-menu" :class="{ active: isMobileMenuOpen }">
+      <div class="mobile-menu-content">
+        <div class="mobile-nav-links">
+          <RouterLink to="/" class="mobile-link" :class="{ active: isCurrentRoute('/') }" @click="closeMobileMenu">Inicio</RouterLink>
+          <RouterLink to="/productos" class="mobile-link" :class="{ active: isCurrentRoute('/productos') }" @click="closeMobileMenu">
+            Productos <i class="fas fa-chevron-down header-caret" aria-hidden="true"></i>
+          </RouterLink>
+          <RouterLink to="/marcas" class="mobile-link" :class="{ active: isCurrentRoute('/marcas') }" @click="closeMobileMenu">Marcas</RouterLink>
+          <RouterLink to="/industrias" class="mobile-link" :class="{ active: isCurrentRoute('/industrias') }" @click="closeMobileMenu">Industrias</RouterLink>
+          <RouterLink to="/promociones" class="mobile-link" :class="{ active: isCurrentRoute('/promociones') }" @click="closeMobileMenu">Promociones</RouterLink>
+          <RouterLink to="/nosotros" class="mobile-link" :class="{ active: isCurrentRoute('/nosotros') }" @click="closeMobileMenu">Nosotros</RouterLink>
+          <RouterLink to="/blog" class="mobile-link" :class="{ active: isCurrentRoute('/blog') }" @click="closeMobileMenu">Blog</RouterLink>
+          <RouterLink to="/contacto" class="mobile-link" :class="{ active: isCurrentRoute('/contacto') }" @click="closeMobileMenu">Contacto</RouterLink>
+        </div>
+
+        <div class="mobile-controls">
+          <RouterLink v-if="!isLoggedIn" class="mobile-btn access-btn" to="/login" @click="closeMobileMenu">
+            Iniciar sesión
+          </RouterLink>
+          <div v-if="isLoggedIn" class="mobile-user-greeting">
+            <span>Hola, {{ username }}</span>
           </div>
+          <RouterLink v-if="isLoggedIn && isAdmin" class="mobile-btn admin-btn" to="/admin/products" @click="closeMobileMenu">
+            Panel admin
+          </RouterLink>
+          <button v-if="isLoggedIn" class="mobile-btn logout-btn" @click="handleMobileLogout">
+            Cerrar sesión
+          </button>
         </div>
       </div>
-    </nav>
+    </div>
 
     <GlobalSearchOverlay v-model:open="isSearchOpen" />
   </header>
@@ -165,518 +157,419 @@
   />
 
   <GlobalCart />
-
-  <!-- Botones flotantes de redes sociales -->
-  <SocialFloating />
+  <SocialFloating v-if="showUtilityBar" />
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView, useRoute } from 'vue-router';
-import { authService } from '@/services/api';
-import { onMounted, ref, watch, computed } from 'vue';
-import router from './router';
-import SocialFloating from '@/components/SocialFloating.vue';
-import GlobalCart from '@/components/GlobalCart.vue';
-import GlobalSearchOverlay from '@/components/GlobalSearchOverlay.vue';
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { authService } from '@/services/api'
+import { computed, onMounted, ref, watch } from 'vue'
+import router from './router'
+import SocialFloating from '@/components/SocialFloating.vue'
+import GlobalCart from '@/components/GlobalCart.vue'
+import GlobalSearchOverlay from '@/components/GlobalSearchOverlay.vue'
 import ProductQuickViewModal from '@/components/ProductQuickViewModal.vue'
 import { useProductQuickView } from '@/composables/useProductQuickView'
-import { useI18n } from 'vue-i18n';
-import type { SupportedLocale } from './i18n';
-import { persistLocale } from './i18n';
+import { useQuotation } from '@/composables/useQuotation'
 
-const isLoggedIn = ref(false);
-const username = ref('');
-const isMobileMenuOpen = ref(false);
-const isSearchOpen = ref(false);
+const isLoggedIn = ref(false)
+const username = ref('')
+const isMobileMenuOpen = ref(false)
+const isSearchOpen = ref(false)
 
 const { isOpen: quickViewOpen, product: quickViewProduct, close: closeQuickView } = useProductQuickView()
+const { totalItems, toggleDrawer } = useQuotation()
 
-const { t, locale } = useI18n();
+const currentRoute = useRoute()
+const isAdmin = computed(() => authService.isAdmin())
+const showHeaderSearch = computed(() => !currentRoute.path.startsWith('/admin') && currentRoute.path !== '/login')
+const showUtilityBar = computed(() => !currentRoute.path.startsWith('/admin') && currentRoute.path !== '/login')
 
-const setLanguage = (next: SupportedLocale) => {
-  locale.value = next;
-  persistLocale(next);
-};
+const isCurrentRoute = (path: string): boolean => currentRoute.path === path
 
-// Router hooks
-const currentRoute = useRoute();
-
-// Verificar si el usuario es administrador
-const isAdmin = computed(() => authService.isAdmin());
-
-// Función para verificar la ruta actual
-const isCurrentRoute = (path: string): boolean => {
-  return currentRoute.path === path;
-};
-
-const showHeaderSearch = computed(() => !currentRoute.path.startsWith('/admin') && currentRoute.path !== '/login');
-
-// Funciones para el menú hamburguesa
 const toggleMobileMenu = () => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value;
-};
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
 
 const closeMobileMenu = () => {
-  isMobileMenuOpen.value = false;
-};
+  isMobileMenuOpen.value = false
+}
 
-const openSearch = async () => {
-  isSearchOpen.value = true;
-};
-
-
-
-
-// Función para hacer scroll a la sección de productos
-/* const scrollToProductStore = () => {
-  const productStoreSection = document.querySelector('.product-store');
-  if (productStoreSection) {
-    productStoreSection.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-}; */
-
-// Función para hacer scroll a la sección de contacto
-/* const scrollToContact = () => {
-  const contactSection = document.querySelector('.contact-section');
-  if (contactSection) {
-    contactSection.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-}; */
+const openSearch = () => {
+  isSearchOpen.value = true
+}
 
 const checkAuthStatus = () => {
-  isLoggedIn.value = authService.isAuthenticated();
+  isLoggedIn.value = authService.isAuthenticated()
   if (isLoggedIn.value) {
-    const currentUser = authService.getCurrentUser();
-    username.value = currentUser?.name || '';
+    const currentUser = authService.getCurrentUser()
+    username.value = currentUser?.name || ''
   } else {
-    username.value = '';
+    username.value = ''
   }
-};
+}
 
 const logout = () => {
-  authService.logout();
-  isLoggedIn.value = false;
-  username.value = '';
-  // Usar replace para no dejar historial que permita volver a la página autenticada
-  router.replace({ name: 'home' });
-};
+  authService.logout()
+  isLoggedIn.value = false
+  username.value = ''
+  router.replace({ name: 'home' })
+}
 
 const handleMobileLogout = () => {
-  closeMobileMenu();
-  logout();
-};
+  closeMobileMenu()
+  logout()
+}
 
 onMounted(() => {
-  checkAuthStatus();
-});
+  checkAuthStatus()
+})
 
-const route = useRoute();
-watch(route, () => {
-  checkAuthStatus();
-});
+watch(currentRoute, () => {
+  checkAuthStatus()
+})
+
+defineOptions({
+  name: 'App'
+})
 </script>
 
 <style scoped>
-.navbar {
-  background: #ffffff;
-  margin: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: fixed;
+.site-header {
+  position: sticky;
   top: 0;
-  left: 0;
-  z-index: 1000;
-  height: 75px;
-  padding: 0 clamp(20px, 5vw, 60px);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 9999;
+  background: #0b0b0b;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.search-toggle {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  border: 1px solid rgba(26, 58, 82, 0.2);
-  background: rgba(26, 58, 82, 0.05);
-  color: #1a3a52;
+.utility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  height: 32px;
+  padding: 0 clamp(16px, 4vw, 44px);
+  background: #0b0b0b;
+  border-bottom: 1px solid rgba(255, 193, 7, 0.18);
+  font-size: 13px;
+  letter-spacing: 0.1px;
+}
+
+.utility-left,
+.utility-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.utility-left {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.utility-right {
+  color: #ffffff;
+  justify-content: flex-end;
+}
+
+.utility-left i,
+.utility-right i {
+  color: #ffc107;
+  margin-right: 6px;
+}
+
+.header-main {
+  min-height: 85px;
+  height: 85px;
+  padding: 0 clamp(16px, 4vw, 44px);
+  background: #0b0b0b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.brand-container {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo-image {
+  width: clamp(160px, 18vw, 220px);
+  height: 56px;
+  object-fit: contain;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.header-search {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 193, 7, 0.24);
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.search-category {
+  border: 0;
+  background: #f5f5f5;
+  color: #0b0b0b;
+  padding: 0 18px;
+  min-height: 50px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  height: 50px;
+  border: 0;
+  background: #ffffff;
+  color: #0b0b0b;
+  padding: 0 18px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #7a7a7a;
+}
+
+.search-submit {
+  width: 56px;
+  height: 50px;
+  border: 0;
+  background: #ffc107;
+  color: #0b0b0b;
+  cursor: pointer;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.account-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.account-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 193, 7, 0.35);
+  background: rgba(255, 193, 7, 0.06);
+}
+
+.account-chip i {
+  font-size: 20px;
+  color: #ffc107;
+}
+
+.account-chip span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.account-chip small {
+  font-size: 11px;
+  color: #a0a0a0;
+  font-weight: 500;
+}
+
+.account-chip strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cart-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.cart-summary-icon {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.cart-summary-badge,
+.mobile-cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffc107;
+  color: #0b0b0b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cart-summary-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.cart-summary-text small {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #a0a0a0;
+}
+
+.cart-summary-text strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nav-strip {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 55px;
+  background: #0b0b0b;
+  border-bottom: 1px solid #ffc107;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 38px;
+  width: 100%;
+  height: 100%;
+}
+
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
   cursor: pointer;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: color 0.3s ease;
 }
 
-.search-toggle:hover {
-  background: rgba(201, 168, 89, 0.15);
-  border-color: rgb(201, 168, 89);
-  color: rgb(201, 168, 89);
+.nav-link--products {
+  gap: 6px;
 }
 
-.search-toggle:active {
-  transform: scale(0.98);
+.header-caret {
+  font-size: 10px;
+  transform: translateY(1px);
 }
 
-.search-toggle.mobile-only {
-  display: none;
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  height: 3px;
+  background: #ffc107;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #ffc107;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
 }
 
 .mobile-header-controls {
   display: none;
   align-items: center;
   gap: 10px;
-}
-
-.lang-switch.mobile-header {
-  display: none;
-  flex-direction: row;
-  gap: 4px;
-  padding: 4px;
-  border-radius: 10px;
-  background: rgba(26, 58, 82, 0.05);
-  border: 1px solid rgba(26, 58, 82, 0.15);
-}
-
-
-
-/* Logo y marca */
-.brand-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Logo creativo */
-.creative-logo {
-  position: relative;
-  width: 50px;
-  height: 50px;
-}
-
-.logo-letter {
-  position: relative;
-  z-index: 2;
-  font-weight: 900;
-  font-size: 14px;
-  color: var(--white);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5),
-               0 0 20px rgba(255, 255, 255, 0.3);
-  letter-spacing: -1px;
-}
-
-.logo-letter:first-child::after {
-  content: '•';
-  margin: 0 1px;
-  font-size: 8px;
-  opacity: 0.6;
-}
-
-.logo-glow {
-  position: absolute;
-  inset: -10px;
-  background: radial-gradient(circle, rgba(201, 168, 89, 0.4) 0%, transparent 70%);
-  border-radius: 50%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.creative-logo:hover .logo-circle {
-  transform: scale(1.08);
-  box-shadow: 0 8px 24px rgba(201, 168, 89, 0.6),
-              0 0 40px rgba(201, 168, 89, 0.4),
-              inset 0 2px 12px rgba(255, 255, 255, 0.3);
-}
-
-.creative-logo:hover .logo-glow {
-  opacity: 1;
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-4px) rotate(2deg); }
-}
-
-
-
-.brand-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-}
-
-.brand-title {
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1;
-  margin: 0;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.brand-title .highlight {
-  background: linear-gradient(135deg, #1a3a52 0%, rgb(201, 168, 89) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 1px 2px rgba(201, 168, 89, 0.2));
-}
-
-.brand-tagline {
-  font-size: 10px;
-  color: rgba(26, 58, 82, 0.6);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.brand-subtitle {
-  font-size: 12px;
-  color: #94a3b8;
-  font-weight: 500;
-  line-height: 1;
-  margin: 0;
-}
-
-/* Navegación principal */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-left: auto;
-  margin-right: 30px;
 }
 
-.nav-link {
-  color: #1a3a52;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  padding: 10px 18px;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.search-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 193, 7, 0.28);
+  background: transparent;
+  color: #ffc107;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-toggle.mobile-only {
+  display: none;
+}
+
+.mobile-cart-btn {
   position: relative;
-  letter-spacing: 0.3px;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-.nav-link:focus {
-  outline: none;
-}
-
-.nav-link:focus-visible {
-  box-shadow: 0 0 0 3px rgba(26, 58, 82, 0.15);
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background: #1a3a52;
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover {
-  color: rgb(201, 168, 89);
-  background-color: rgba(201, 168, 89, 0.1);
-  transform: translateY(-2px);
-}
-
-.nav-link:hover::after {
-  width: 70%;
-  background: rgb(201, 168, 89);
-}
-
-.nav-link.active {
-  color: rgb(201, 168, 89);
-  background: rgba(201, 168, 89, 0.12);
-}
-
-.nav-link.active::after {
-  width: 70%;
-  background: rgb(201, 168, 89);
-}
-
-.share-btn {
-  background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
-  color: #ffffff !important;
-  font-weight: 600;
-  box-shadow: 0 2px 10px rgba(34, 211, 238, 0.3);
-}
-
-.share-btn:hover {
-  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
-  box-shadow: 0 4px 15px rgba(34, 211, 238, 0.5);
-  transform: translateY(-2px);
-}
-
-/* Controles de usuario */
-.nav-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.lang-switch {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 6px;
-  border-radius: 12p6, 58, 82, 0.05;
-  border: 1px solid rgba(26, 58, 82, 0.15);
-}
-
-.lang-switch.mobile {
-  width: 100%;
-  justify-content: center;
-}
-
-.lang-btn {
-  appearance: none;
-  border: 1px solid rgba(26, 58, 82, 0.15);
-  background: rgba(26, 58, 82, 0.05);
-  color: #1a3a52;
-  border-radius: 10px;
-  padding: 6px 10px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
-  line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 193, 7, 0.28);
+  background: transparent;
+  color: #ffc107;
 }
 
-.flag-icon {
-  width: 18px;
-  height: 12px;
-  display: block;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba(26, 58, 82, 0.1);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.lang-btn:hover {
-  background: rgba(201, 168, 89, 0.15);
-  color: rgb(201, 168, 89.3);
-  background: rgba(26, 58, 82, 0.1);
-}
-
-.lang-btn.active {
-  border-color: rgb(201, 168, 89);
-  background: rgba(201, 168, 89, 0.15.85);
-  background: rgba(201, 168, 89, 0.2);
-  color: rgb(201, 168, 89);
-}
-
-.btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.access-btn {
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(180, 145, 65) 100%);
-  color: #0a3a2e;
-  box-shadow: 0 4px 16px rgba(201, 168, 89, 0.35);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.access-btn:hover {
-  background: linear-gradient(135deg, rgb(180, 145, 65) 0%, rgb(160, 125, 45) 100%);
-  box-shadow: 0 6px 24px rgba(201, 168, 89, 0.5);
-  transform: translateY(-3px);
-}
-
-.logout-btn {
-  background: rgba(201, 168, 89, 0.1);
-  color: rgb(201, 168, 89);
-  border: 1px solid rgba(201, 168, 89, 0.3);
-}
-
-.logout-btn:hover {
-  background: rgba(201, 168, 89, 0.2);
-  border-color: rgba(201, 168, 89, 0.5);
-  transform: translateY(-1px);
-}
-
-.admin-btn {
-  background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
-  color: rgb(201, 168, 89);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(201, 168, 89, 0.3);
-  font-weight: 700;
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
-.admin-btn:hover {
-  background: linear-gradient(135deg, #1a1a1a 0%, var(--black) 100%);
-  box-shadow: 0 6px 24px rgba(201, 168, 89, 0.4);
-  transform: translateY(-3px);
-  border-color: rgb(201, 168, 89);
-}
-
-.purchases-btn {
-  background: var(--brand-accent-gradient);
-  color: #ffffff;
-  box-shadow: 0 2px 10px var(--brand-accent-glow);
-}
-
-.purchases-btn:hover {
-  background: var(--brand-accent-gradient);
-  filter: brightness(1.1);
-  box-shadow: 0 4px 15px var(--brand-accent-glow);
-  transform: translateY(-2px);
-}
-
-.user-greeting {
-  color: #1a3a52;
-  font-weight: 600;
-  font-size: 14px;
-  margin-right: 10px;
-}
-
-/* Menu hamburguesa */
 .hamburger-menu {
+  margin-left: 10px;
   display: none;
   flex-direction: column;
   width: 30px;
@@ -694,7 +587,7 @@ watch(route, () => {
   display: block;
   height: 3px;
   width: 100%;
-  background-color: #1a3a52;
+  background-color: #ffffff;
   border-radius: 3px;
   transition: all 0.3s ease;
 }
@@ -711,18 +604,17 @@ watch(route, () => {
   transform: rotate(-45deg) translate(7px, -6px);
 }
 
-/* Menu mobile */
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 70px;
+  top: 117px;
   left: 0;
   width: 100%;
-  height: calc(100vh - 70px);
-  background: var(--brand-gradient);
+  height: calc(100vh - 117px);
+  background: #0b0b0b;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
-  z-index: 999;
+  z-index: 9998;
   overflow-y: auto;
 }
 
@@ -744,7 +636,7 @@ watch(route, () => {
 }
 
 .mobile-link {
-  color: #e2e8f0;
+  color: #ffffff;
   text-decoration: none;
   padding: 15px 20px;
   font-size: 18px;
@@ -752,24 +644,13 @@ watch(route, () => {
   border-radius: 12px;
   transition: all 0.3s ease;
   text-align: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.mobile-link:focus {
-  outline: none;
-}
-
-.mobile-link:focus-visible {
-  box-shadow: 0 0 0 3px rgba(201, 168, 89, 0.35);
-}
-
+.mobile-link.active,
 .mobile-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  transform: translateY(-2px);
+  color: #ffc107;
 }
 
 .mobile-controls {
@@ -794,28 +675,12 @@ watch(route, () => {
   font-family: inherit;
 }
 
-.mobile-btn.access-btn {
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(180, 145, 65) 100%);
-  color: #0a3a2e;
-  box-shadow: 0 4px 15px rgba(201, 168, 89, 0.3);
-}
-
+.mobile-btn.access-btn,
+.mobile-btn.admin-btn,
 .mobile-btn.logout-btn {
-  background: rgba(201, 168, 89, 0.1);
-  color: rgb(201, 168, 89);
-  border: 1px solid rgba(201, 168, 89, 0.3);
-}
-
-.mobile-btn.admin-btn {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: transparent;
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-}
-
-.mobile-btn.purchases-btn {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mobile-user-greeting {
@@ -824,24 +689,30 @@ watch(route, () => {
   padding: 15px 20px;
   font-weight: 600;
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-  .navbar {
-    height: 70px;
-    padding: 0 20px;
+  .utility-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 16px;
+    gap: 6px;
+    height: auto;
   }
 
-  .desktop-nav {
+  .utility-right {
+    gap: 10px;
+  }
+
+  .header-main {
+    height: 85px;
+    padding: 12px 16px;
+  }
+
+  .desktop-only {
     display: none;
-  }
-
-  .hamburger-menu {
-    display: flex;
   }
 
   .mobile-header-controls {
@@ -852,86 +723,30 @@ watch(route, () => {
     display: inline-flex;
   }
 
-  .lang-switch.mobile-header {
-    display: inline-flex;
+  .hamburger-menu {
+    display: flex;
   }
 
   .mobile-menu {
     display: block;
-  }
-
-  .brand-title {
-    font-size: 18px;
-  }
-
-  .brand-logo {
-    width: 42px;
-    height: 42px;
-  }
-
-  .brand-subtitle {
-    font-size: 11px;
-  }
-
-  .logo-circle {
-    width: 45px;
-    height: 45px;
-    font-size: 20px;
+    top: 117px;
+    height: calc(100vh - 117px);
   }
 }
 
 @media (max-width: 480px) {
-  .navbar {
-    padding: 0 15px;
+  .utility-right {
+    display: none;
   }
 
-  .brand-container {
-    gap: 10px;
+  .brand-logo-image {
+    width: clamp(130px, 42vw, 180px);
+    height: 46px;
   }
 
-  .brand-title {
-    font-size: 16px;
+  .mobile-menu {
+    top: 117px;
+    height: calc(100vh - 117px);
   }
-
-  .brand-logo {
-    width: 38px;
-    height: 38px;
-  }
-
-  .logo-circle {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-  }
-}
-
-/* Quitar subrayado del link principal */
-.link-navbar {
-  text-decoration: none !important;
-}
-
-/* Estilos para enlaces activos */
-/* Nota: el subrayado del link activo en desktop ya lo maneja
-   `.nav-link::after` + `.nav-link.active::after` (centrado).
-   Aquí sólo damos estado activo al menú mobile sin subrayado extra. */
-.mobile-link.active {
-  color: rgb(201, 168, 89);
-  border-color: rgba(201, 168, 89, 0.35);
-  background: rgba(201, 168, 89, 0.12);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scaleX(0.5);
-  }
-  to {
-    opacity: 1;
-    transform: scaleX(1);
-  }
-}
-
-.link-navbar:hover {
-  text-decoration: none !important;
 }
 </style>
