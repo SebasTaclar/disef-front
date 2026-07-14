@@ -273,7 +273,7 @@
               :disabled="selectedProduct?.status !== 'available' || (selectedProduct?.colors && selectedProduct.colors.length > 0 && !modalSelectedColor)"
               class="modal-add-to-cart"
             >
-              {{ selectedProduct?.status === 'available' ? 'Agregar al carrito' : 'No disponible' }}
+              {{ selectedProduct?.status === 'available' ? 'Agregar a cotización' : 'No disponible' }}
             </button>
           </div>
         </div>
@@ -286,11 +286,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
-import { useCart } from '@/composables/useCart'
+import { useQuotation } from '@/composables/useQuotation'
 import type { Product } from '@/composables/useProducts'
 
 
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 
 useHead({
   title: 'iPad Pro M3 y iPad Air | Apple Store Pro',
@@ -312,7 +312,7 @@ useHead({
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
 
-const { addToCart } = useCart()
+const { addToQuotation, openDrawer } = useQuotation()
 
 const isLoadingProducts = ref(true)
 
@@ -422,16 +422,19 @@ const addToCartFromModal = () => {
     // Obtener el nombre de la categoría
     const categoryName = categories.value.find(cat => cat.id === selectedProduct.value!.category)?.name || 'Producto'
 
-    // Crear el producto mapeado para el carrito
+    // Crear el producto mapeado para la cotización
     const mappedProduct = {
       ...selectedProduct.value,
       inStock: selectedProduct.value.status === 'available',
       image: selectedProduct.value.images[0],
-      category: categoryName // Reemplazar el ID por el nombre
+      category: categoryName, // Reemplazar el ID por el nombre
+      sku: 'N/A',
+      brand: 'N/A'
     }
 
     // Pasar el color seleccionado como tercer parámetro
-    addToCart(mappedProduct, 1, modalSelectedColor.value || undefined)
+    addToQuotation(mappedProduct, 1, modalSelectedColor.value || undefined)
+    openDrawer()
     closeModal()
   }
 }

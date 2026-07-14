@@ -14,12 +14,14 @@ function normalizeCategory(input: unknown): Category {
     const id = anyCat.id !== undefined ? String(anyCat.id) : crypto.randomUUID()
     const name = String(anyCat.name || '')
     const description = String(anyCat.description || '')
+    const imageUrls = Array.isArray(anyCat.imageUrls) ? anyCat.imageUrls.map(String) : undefined
     const createdAtRaw = anyCat.createdAt
     const updatedAtRaw = anyCat.updatedAt
     return {
       id,
       name,
       description,
+      imageUrls,
       createdAt: createdAtRaw ? new Date(String(createdAtRaw)) : new Date(),
       updatedAt: updatedAtRaw ? new Date(String(updatedAtRaw)) : undefined
     }

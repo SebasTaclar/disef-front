@@ -132,7 +132,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
-import { useCart } from '@/composables/useCart'
+import { useQuotation } from '@/composables/useQuotation'
 import { useProductQuickView } from '@/composables/useProductQuickView'
 import type { Product } from '@/types/ProductType'
 
@@ -141,7 +141,7 @@ const props = defineProps<{ slug: string; title?: string }>()
 const route = useRoute()
 
 const { availableProducts, categories, loadProducts, loadCategories } = useProducts()
-const { addToCart } = useCart()
+const { addToQuotation, openDrawer } = useQuotation()
 const quickView = useProductQuickView()
 
 const loading = ref(false)
@@ -284,16 +284,19 @@ function addProductToCart(p: Product) {
     characteristics.push(...p.colors)
   }
 
-  addToCart({
+  addToQuotation({
     id: p.id,
     name: p.name,
+    sku: p.sku || 'N/A',
+    brand: p.brand || 'N/A',
     price: p.price,
     image: p.images?.[0] || '',
     category: categoryName(p.category),
     description: p.description,
     inStock: p.status === 'available',
     originalPrice: p.originalPrice
-  }, 1, p.colors?.[0], characteristics)
+  }, 1)
+  openDrawer()
 }
 
 function openQuickView(p: Product) {

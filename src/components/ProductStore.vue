@@ -4,10 +4,10 @@
       <!-- Header de la sección -->
       <div class="store-header">
         <h2 class="store-title">
-          Nuestra Joyería
+          Nuestras soluciones industriales
         </h2>
         <p class="store-subtitle">
-          Piezas que elevan tu estilo: anillos, aretes, collares y pulseras.
+          Equipos, insumos y herramientas para obra, planta y mantenimiento.
         </p>
       </div>
 
@@ -113,6 +113,10 @@
             <!-- Información del producto -->
             <div class="product-info">
               <h3 class="product-name">{{ product.name }}</h3>
+              <div class="product-meta">
+                <span v-if="product.brand" class="product-brand">{{ product.brand }}</span>
+                <span v-if="product.sku" class="product-sku">SKU: {{ product.sku }}</span>
+              </div>
               <div class="product-description">
                 <p class="truncated">
                   {{ product.description }}
@@ -127,31 +131,35 @@
               </div>
 
               <!-- Precios -->
-              <div class="price-section">
+              <div v-if="product.status === 'available'" class="price-section">
                 <div class="price-wrapper">
                   <span class="current-price">${{ product.price.toLocaleString() }} COP</span>
                   <span v-if="product.originalPrice" class="original-price">
                     ${{ product.originalPrice.toLocaleString() }} COP
                   </span>
-                  <span v-if="product.originalPrice && product.originalPrice > product.price" class="discount-badge">
-                    -{{ Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) }}%
-                  </span>
                 </div>
               </div>
 
-              <!-- Botón de agregar al carrito -->
+              <!-- Disponibilidad -->
+              <div class="product-availability">
+                <span :class="['availability-badge', product.status === 'available' ? 'available' : 'unavailable']">
+                  {{ product.status === 'available' ? 'Disponible' : 'No disponible' }}
+                </span>
+              </div>
+
+              <!-- Botón de agregar a cotización -->
               <button
                 v-if="product.status === 'available'"
-                @click.stop="addToCartFromCard($event, product)"
-                class="add-to-cart-btn"
-                :disabled="product.status !== 'available'"
+                @click.stop="addToQuotationFromCard($event, product)"
+                class="add-to-quotation-btn"
               >
-                <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
-                <span>Agregar</span>
+                <span>Agregar a cotización</span>
               </button>
             </div>
             </div>
@@ -525,16 +533,16 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProducts, type Product as ProductType } from '@/composables/useProducts'
 import { useProductQuickView } from '@/composables/useProductQuickView'
-import { useCart } from '@/composables/useCart'
+import { useQuotation } from '@/composables/useQuotation'
 
 // Router
 const router = useRouter()
 
-// Modal global de quick view (estilo joyería, reutilizado en toda la app)
+// Modal global de quick view, reutilizado en toda la app
 const quickView = useProductQuickView()
 
-// Carrito de compras
-const { addToCart } = useCart()
+// Cotización
+const { addToQuotation, openDrawer } = useQuotation()
 
 // Usar el composable de productos
 const {
@@ -719,42 +727,39 @@ function goToCategory(slug: string) {
   router.push('/')
 }
 
-// Función para agregar al carrito desde la tarjeta
-const addToCartFromCard = (event: Event, product: ProductType) => {
-  event.stopPropagation() // Evitar que se abra el modal
-  
+// Función para agregar a cotización desde la tarjeta
+const addToQuotationFromCard = (event: Event, product: ProductType) => {
+  event.stopPropagation()
+
   if (product.status !== 'available') {
     return
   }
-  
-  // Construir características del producto
-  const characteristics: string[] = []
-  if (product.colors && product.colors.length > 0) {
-    // Agregar todos los colores disponibles
-    characteristics.push(...product.colors)
-  }
-  
-  addToCart({
+
+  addToQuotation({
     id: product.id,
     name: product.name,
+    sku: product.sku || 'N/A',
+    brand: product.brand || 'N/A',
     price: product.price,
     image: product.images[0],
     category: categoryNameById(product.category),
     description: product.description,
     inStock: product.status === 'available',
     originalPrice: product.originalPrice
-  }, 1, product.colors?.[0], characteristics)
+  }, 1)
+
+  openDrawer()
 }
 
-// Colores/materiales (joyería) + fallback compatible con nombres comunes
-// (Reservado) Helpers de colores para joyería.
+// Colores/materiales + fallback compatible con nombres comunes
+// (Reservado) Helpers de colores para productos.
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap');
 
 .product-store {
-  /* Variables locales para look joyería (reutiliza paleta ya usada en el proyecto) */
+  /* Variables locales para look industrial (reutiliza paleta ya usada en el proyecto) */
   --store-ink: #071e25;
   --store-gold: rgb(201, 168, 89);
   --store-gold-deep: rgb(215, 172, 67);
@@ -791,7 +796,7 @@ const addToCartFromCard = (event: Event, product: ProductType) => {
   margin-bottom: 1rem;
   color: var(--brand-primary);
   text-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   letter-spacing: 0.5px;
 }
 
@@ -1205,7 +1210,13 @@ const addToCartFromCard = (event: Event, product: ProductType) => {
 
 .product-image {
   position: relative;
-  height: 240px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 280px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -1213,7 +1224,8 @@ const addToCartFromCard = (event: Event, product: ProductType) => {
 .product-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   transition: transform 0.3s ease;
 }
 
@@ -1260,7 +1272,7 @@ const addToCartFromCard = (event: Event, product: ProductType) => {
   font-weight: 700;
   margin: 0 0 0.4rem 0;
   color: var(--brand-primary);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   letter-spacing: 0.2px;
 }
 

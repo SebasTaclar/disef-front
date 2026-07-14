@@ -34,7 +34,7 @@
         <header class="category-hero">
           <div class="category-hero-text">
             <h1 class="category-title">Ofertas Especiales</h1>
-            <p class="category-description">Descubre nuestras mejores ofertas en joyería fina. Productos exclusivos con descuentos por tiempo limitado.</p>
+            <p class="category-description">Descubre nuestras mejores ofertas en soluciones industriales. Productos exclusivos con descuentos por tiempo limitado.</p>
           </div>
 
           <div class="category-hero-image">
@@ -108,19 +108,19 @@ import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/types/ProductType'
 
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 
 useHead({
-  title: 'Ofertas | Joyería Angelie',
+  title: 'Ofertas | DISEF Comercializadora Industrial',
   meta: [
     {
       name: 'description',
-      content: 'Descubre nuestras ofertas y productos con descuento en Joyería Angelie. Aprovecha precios especiales por tiempo limitado.'
+      content: 'Descubre nuestras ofertas y productos con descuento en DISEF Comercializadora Industrial. Aprovecha precios especiales por tiempo limitado.'
     },
-    { property: 'og:title', content: 'Ofertas | Joyería Angelie' },
-    { property: 'og:description', content: 'Productos con descuento en Joyería Angelie. Aprovecha precios especiales por tiempo limitado.' },
+    { property: 'og:title', content: 'Ofertas | DISEF Comercializadora Industrial' },
+    { property: 'og:description', content: 'Productos con descuento en DISEF Comercializadora Industrial. Aprovecha precios especiales por tiempo limitado.' },
     { property: 'og:image', content: '/images/logo.jpeg' },
-    { property: 'og:url', content: 'https://www.joyeriaangelie.com/ofertas' },
+    { property: 'og:url', content: 'https://www.disef.com.co/ofertas' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:image', content: '/images/logo.jpeg' }
   ]

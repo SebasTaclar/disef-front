@@ -2,20 +2,23 @@
 export interface Category {
   id: string
   name: string
-  description?: string // Opcional según modelo Prisma
+  description?: string
+  imageUrls?: string[]
   createdAt: Date
   updatedAt?: Date
 }
 
 export interface CreateCategoryRequest {
   name: string
-  description?: string // Opcional según modelo Prisma
+  description?: string
+  imageUrls?: string[]
 }
 
 export interface CreateCategoryResponse {
   id: number
   name: string
   description: string
+  imageUrls?: string[]
   createdAt: string
   updatedAt: string
 }

@@ -17,7 +17,7 @@
               <p class="placeholder-text">{{ t('videos.clickToLoad') }}</p>
             </div>
           </div>
-          
+
           <!-- Iframe directo (más estable en SPA; no depende de reinicializar scripts) -->
           <iframe
             v-else
@@ -47,15 +47,15 @@ type TikTokVideo = { id: string; url: string }
 const videos: TikTokVideo[] = [
   {
     id: '7564589333794098450',
-    url: 'https://www.tiktok.com/@joyeria_angelie/video/7564589333794098450'
+    url: 'https://www.tiktok.com/@disefcolombia/video/7564589333794098450'
   },
   {
     id: '7566079307521543431',
-    url: 'https://www.tiktok.com/@joyeria_angelie/video/7566079307521543431'
+    url: 'https://www.tiktok.com/@disefcolombia/video/7566079307521543431'
   },
   {
     id: '7528947477798505784',
-    url: 'https://www.tiktok.com/@joyeria_angelie/video/7528947477798505784'
+    url: 'https://www.tiktok.com/@disefcolombia/video/7528947477798505784'
   }
 ]
 
@@ -79,7 +79,7 @@ async function loadVideosNow() {
 onMounted(async () => {
   // Esperar a que el DOM esté completamente listo
   await nextTick()
-  
+
   if (!sectionRef.value) {
     return
   }

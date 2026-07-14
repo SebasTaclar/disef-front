@@ -1,107 +1,137 @@
 <template>
-  <section class="hero-banner" :style="{ backgroundImage: 'url(/images/banner1.jpg)' }">
-    <!-- Fondo con esmeraldas animadas -->
-    <div class="emerald-background">
-      <div class="emerald emerald-1"></div>
-      <div class="emerald emerald-2"></div>
-      <div class="emerald emerald-3"></div>
-      <div class="emerald emerald-4"></div>
-      <div class="emerald emerald-5"></div>
-      <div class="emerald emerald-6"></div>
-      <div class="emerald emerald-7"></div>
-      <div class="emerald emerald-8"></div>
-    </div>
+  <section class="hero-banner-wrapper">
+    <section class="hero-banner">
+      <div class="hero-bg">
+        <img :src="slides[currentSlide].image" :alt="slides[currentSlide].alt" class="hero-bg-img" />
+      </div>
 
-    <!-- Banner center logo -->
-    <div class="hero-logo-container animate-fade-in">
-      <div class="logo-glow"></div>
-      <img src="/images/logo.jpeg" :alt="$t('banner.logoAlt')" class="hero-logo">
-      <div class="logo-shine"></div>
-    </div>
+      <div class="hero-overlay-left"></div>
+      <div class="hero-diagonal-lines"></div>
 
-    <!-- Contenedor principal -->
-    <div class="banner-content">
-      <!-- Textos principales -->
-      <div class="text-section">
-        <h1 class="brand-name">
-          <span class="brand-joyeria">JOYERÍA</span>
-          <span class="brand-angelie">ANGELIE</span>
-        </h1>
-        <div class="hero-divider animate-fade-in-delay-2">
-          <span class="divider-line"></span>
-          <i class="fas fa-gem"></i>
-          <span class="divider-line"></span>
+      <button class="hero-arrow hero-arrow--left" @click="prevSlide" aria-label="Slide anterior">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="hero-arrow hero-arrow--right" @click="nextSlide" aria-label="Siguiente slide">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <div class="hero-content">
+        <div class="hero-copy">
+          <p class="hero-kicker">
+            <i class="fas fa-bolt" aria-hidden="true"></i>
+            Soluciones industriales y eléctricas
+          </p>
+          <h1 class="hero-title">
+            Más de <span class="hero-highlight">20 años</span><br />
+            ofreciendo soluciones<br />
+            eléctricas e industriales
+          </h1>
+          <p class="hero-subtitle">Calidad, seguridad y eficiencia en cada proyecto.</p>
+
+          <div class="hero-actions">
+            <button class="btn-hero btn-hero--primary" @click="scrollToProducts">
+              <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+              <span>Solicitar cotización</span>
+            </button>
+            <button class="btn-hero btn-hero--secondary" @click="scrollToContact">
+              <i class="fas fa-file-lines" aria-hidden="true"></i>
+              <span>Solicitar cotización</span>
+            </button>
+          </div>
         </div>
-        <p class="brand-tagline">{{ $t('banner.tagline') }}</p>
       </div>
 
-      <!-- Botones de acción -->
-      <div class="action-buttons">
-        <button class="btn btn-primary" @click="scrollToProducts">
-          <span>{{ $t('banner.explore') }}</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 18 6-6-6-6"/>
-          </svg>
-        </button>
-        <button class="btn btn-secondary" @click="toggleInfo">
-          <span>{{ $t('banner.learnMore') }}</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </button>
+      <div class="hero-indicators">
+        <button
+          v-for="(_, index) in slides"
+          :key="index"
+          class="hero-dot"
+          :class="{ active: index === currentSlide }"
+          @click="goToSlide(index)"
+          :aria-label="`Slide ${index + 1}`"
+        ></button>
       </div>
-
-      <!-- Línea decorativa -->
-
-    </div>
-
-    <!-- Indicador de scroll -->
-    <div
-      class="scroll-indicator"
-      role="button"
-      tabindex="0"
-      @click="scrollDownIndicator"
-      @keydown.enter.prevent="scrollDownIndicator"
-      @keydown.space.prevent="scrollDownIndicator"
-    >
-      <p>{{ $t('banner.scrollDown') }}</p>
-      <div class="scroll-arrow" aria-hidden="true"></div>
+    </section>
+    <div class="benefits-bar">
+      <div class="benefit-item" v-for="benefit in benefits" :key="benefit.title">
+        <div class="benefit-icon">
+          <i :class="benefit.icon" aria-hidden="true"></i>
+        </div>
+        <div class="benefit-text">
+          <strong>{{ benefit.title }}</strong>
+          <span>{{ benefit.description }}</span>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-// Botones del banner: navegación por scroll dentro del Home.
+import { ref, onMounted, onUnmounted } from 'vue'
 
-// Funciones
-const scrollToProducts = () => {
-  const productsSection = document.querySelector('#products') || document.querySelector('.product-store')
-  if (productsSection) {
-    productsSection.scrollIntoView({ behavior: 'smooth' })
+const currentSlide = ref(0)
+let autoplayTimer: ReturnType<typeof setInterval> | null = null
+
+const slides = [
+  {
+    image: 'https://res.cloudinary.com/dlwzazojt/image/upload/v1783533124/ChatGPT_Image_8_jul_2026_12_45_14_plultb.png',
+    alt: 'Técnico electricista trabajando en tablero eléctrico industrial'
+  },
+  {
+    image: 'https://res.cloudinary.com/dlwzazojt/image/upload/v1783533912/ChatGPT_Image_8_jul_2026_13_05_00_pmnahb.png',
+    alt: 'Equipo de trabajo en instalaciones eléctricas industriales'
+  },
+  {
+    image: 'https://res.cloudinary.com/dlwzazojt/image/upload/v1783519773/ChatGPT_Image_8_jul_2026_09_09_13_g2nws1.png',
+    alt: 'Soluciones eléctricas industriales de alta calidad'
   }
+]
+
+const benefits = [
+  { icon: 'fas fa-certificate', title: 'Productos certificados', description: 'Cumplimiento de normas' },
+  { icon: 'fas fa-truck-fast', title: 'Envíos a todo el país', description: 'Cobertura nacional' },
+  { icon: 'fas fa-headset', title: 'Asesoría técnica', description: 'Especialistas a tu servicio' },
+  { icon: 'fas fa-award', title: 'Marcas líderes', description: 'Distribuidores autorizados' },
+  { icon: 'fas fa-shield-halved', title: 'Pagos seguros', description: 'Compra protegida' }
+]
+
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % slides.length
+  resetAutoplay()
 }
 
-const toggleInfo = () => {
-  const categoriesSection = document.querySelector('#categories') || document.querySelector('.categories-section')
-  if (categoriesSection) {
-    categoriesSection.scrollIntoView({ behavior: 'smooth' })
-  }
+const prevSlide = () => {
+  currentSlide.value = (currentSlide.value - 1 + slides.length) % slides.length
+  resetAutoplay()
 }
 
-const scrollDownIndicator = () => {
-  const target =
-    document.querySelector('#categories') ||
-    document.querySelector('.categories-section') ||
-    document.querySelector('#products') ||
-    document.querySelector('.product-store')
+const goToSlide = (index: number) => {
+  currentSlide.value = index
+  resetAutoplay()
+}
 
+const resetAutoplay = () => {
+  if (autoplayTimer) clearInterval(autoplayTimer)
+  autoplayTimer = setInterval(nextSlide, 6000)
+}
+
+const scrollToSection = (selector: string) => {
+  const target = document.querySelector(selector)
   if (target) {
-    target.scrollIntoView({ behavior: 'smooth' })
-    return
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
-
-  window.scrollBy({ top: window.innerHeight * 0.9, behavior: 'smooth' })
 }
+
+const scrollToProducts = () => scrollToSection('#products')
+const scrollToContact = () => scrollToSection('#contact')
+
+onMounted(() => {
+  autoplayTimer = setInterval(nextSlide, 6000)
+})
+
+onUnmounted(() => {
+  if (autoplayTimer) clearInterval(autoplayTimer)
+})
 
 defineOptions({
   name: 'MainBanner'
@@ -109,757 +139,426 @@ defineOptions({
 </script>
 
 <style scoped>
-/* === BANNER ELEGANTE JOYERÍA ANGELIE === */
-
-/* Animaciones */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(5deg);
-  }
-}
-
-@keyframes rotate-slow {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(201, 168, 89, 0.4), inset 0 0 20px rgba(201, 168, 89, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(201, 168, 89, 0.7), inset 0 0 30px rgba(201, 168, 89, 0.25);
-  }
-}
-
-@keyframes fade-in-down {
+@keyframes slideFromLeft {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateX(-60px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounce-down {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(10px);
-  }
-}
-
-@keyframes float-logo {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-15px) scale(1.05);
-  }
-}
-
-@keyframes glow-logo {
-  0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(201, 168, 89, 0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 25px rgba(201, 168, 89, 0.9));
-  }
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-15px) scale(1.05); }
-}
-
-@keyframes rotate-logo {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes gemRotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.1); }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-fade-in-delay-2 {
-  animation: fade-in-down 1s ease-out 0.5s both;
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
 }
 
-.animate-fade-in {
-  animation: fadeIn 1.2s ease-out;
+.hero-banner-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0;
 }
 
-/* Banner principal */
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 90vh;
-  min-height: 700px;
+  height: 580px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0a3a2e 0%, #0d5546 50%, #1a4d47 100%);
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-banner::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(10, 58, 46, 0.15), rgba(10, 58, 46, 0.15)),
-              radial-gradient(ellipse at 50% 30%, rgba(212, 175, 55, 0.05), transparent 80%);
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* Fondo con esmeraldas */
-.emerald-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 1;
-  opacity: 0.4;
-}
-
-.emerald {
-  position: absolute;
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-  border-radius: 50%;
-  filter: blur(40px);
-  animation: float 6s ease-in-out infinite;
-}
-
-.emerald-1 {
-  width: 300px;
-  height: 300px;
-  top: -10%;
-  left: -5%;
-  animation-delay: 0s;
-}
-
-.emerald-2 {
-  width: 250px;
-  height: 250px;
-  top: 20%;
-  right: -10%;
-  animation-delay: 1s;
-}
-
-.emerald-3 {
-  width: 280px;
-  height: 280px;
-  bottom: -15%;
-  left: 15%;
-  animation-delay: 2s;
-}
-
-.emerald-4 {
-  width: 200px;
-  height: 200px;
-  bottom: 10%;
-  right: 5%;
-  animation-delay: 1.5s;
-}
-
-.emerald-5 {
-  width: 220px;
-  height: 220px;
-  top: 40%;
-  left: 10%;
-  animation-delay: 2.5s;
-}
-
-.emerald-6 {
-  width: 260px;
-  height: 260px;
-  top: 60%;
-  right: 20%;
-  animation-delay: 0.5s;
-}
-
-.emerald-7 {
-  width: 180px;
-  height: 180px;
-  bottom: 30%;
-  left: 50%;
-  animation-delay: 3s;
-}
-
-.emerald-8 {
-  width: 240px;
-  height: 240px;
-  top: 10%;
-  right: 40%;
-  animation-delay: 1.8s;
-}
-
-/* Contenedor principal */
-.banner-content {
-  position: relative;
-  z-index: 10;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.3rem;
-  animation: fade-in-down 1s ease-out;
-}
-
-/* Asegura centrado del bloque de texto (incluye tagline) */
-.text-section {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Hero logo (center) */
-.hero-logo-container {
-  position: relative;
-  margin: 0 auto 1.5rem;
-  z-index: 20;
-  display: block;
-  text-align: center;
-}
-
-.hero-logo {
-  height: 180px;
-  width: 180px;
-  border-radius: 50%;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.6), 0 0 80px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.5);
-  border: 4px solid rgba(212, 175, 55, 0.5);
-  animation: logoFloat 3s ease-in-out infinite;
-  display: block;
-  object-fit: contain;
-}
-
-.logo-glow {
-  position: absolute;
-  inset: -20px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.4), transparent 70%);
-  animation: pulse 2s ease-in-out infinite;
-  z-index: -1;
-}
-
-@keyframes shine {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-.logo-shine {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
-  animation: shine 3s infinite;
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* (Logo styles consolidated above for hero-logo-container) */
-
-/* Textos */
-.text-section {
-  animation: slide-up 1s ease-out 0.4s both;
-}
-
-.brand-name {
-  font-size: clamp(3rem, 12vw, 5.5rem);
-  font-weight: 700;
-  letter-spacing: 4px;
+  background: transparent;
   margin: 0;
-  line-height: 1;
-  text-transform: uppercase;
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+  padding: 0;
 }
 
-.brand-joyeria {
-  display: block;
-  font-size: 48px;
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 300;
-  letter-spacing: 8px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #0B0B0B;
 }
 
-.brand-angelie {
-  display: block;
-  font-size: 96px;
-  color: #c9a859;
-  letter-spacing: 12px;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(201, 168, 89, 0.3);
-  font-family: 'Playfair Display', 'Georgia', 'Garamond', serif;
-  line-height: 1;
+.hero-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  animation: slowZoom 12s ease-in-out infinite alternate;
+  filter: brightness(0.85) saturate(1.1);
 }
 
-.hero-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.divider-line {
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgb(201, 168, 89), transparent);
-  display: block;
-}
-
-.hero-divider i {
-  color: rgb(201, 168, 89);
-  font-size: 1.2rem;
-  animation: gemRotate 4s linear infinite;
-}
-
-.brand-tagline {
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.95);
-  margin-top: 1.5rem;
-  margin-bottom: 0;
-  margin-left: auto;
-  margin-right: auto;
-  letter-spacing: 0.5px;
-  font-weight: 300;
-  max-width: 700px;
-  line-height: 1.8;
-  font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
-  text-align: center;
-}
-
-/* Botones de acción */
-.action-buttons {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  animation: slide-up 1s ease-out 0.6s both;
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border: 2px solid;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  position: relative;
+.hero-overlay-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: rgba(11, 11, 11, 0.45);
+  z-index: 1;
   overflow: hidden;
 }
 
-.btn::before {
-  content: '';
+.hero-diagonal-lines {
   position: absolute;
-  top: 0;
-  left: -100%;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: 
+    linear-gradient(180deg, rgba(11, 11, 11, 0.1) 0%, rgba(11, 11, 11, 0.25) 100%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 80px,
+      rgba(255, 193, 7, 0.05) 80px,
+      rgba(255, 193, 7, 0.05) 82px
+    );
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transition: left 0.3s ease;
-  z-index: -1;
+  display: flex;
+  align-items: center;
+  padding-left: clamp(40px, 6vw, 100px);
 }
 
-.btn:hover::before {
-  left: 100%;
+.hero-copy {
+  max-width: 520px;
+  animation: slideFromLeft 0.7s ease both;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(220, 190, 120) 100%);
-  color: #0a3a2e;
-  border-color: rgb(201, 168, 89);
-  box-shadow: 0 8px 25px rgba(201, 168, 89, 0.4);
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  color: #FFC107;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(201, 168, 89, 0.6);
+.hero-kicker i {
+  font-size: 0.9rem;
 }
 
-.btn-secondary {
-  background: linear-gradient(135deg, rgba(15, 36, 55, 0.8) 0%, rgba(10, 58, 46, 0.9) 100%);
-  color: #ffffff;
-  border-color: rgb(201, 168, 89);
-  box-shadow: 0 8px 25px rgba(201, 168, 89, 0.2);
+.hero-title {
+  margin: 0 0 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #FFFFFF;
+  letter-spacing: -0.5px;
 }
 
-.btn-secondary:hover {
-  background: linear-gradient(135deg, rgba(15, 36, 55, 0.95) 0%, rgba(10, 58, 46, 1) 100%);
-  border-color: rgb(201, 168, 89);
-  box-shadow: 0 8px 25px rgba(201, 168, 89, 0.4);
+.hero-highlight {
+  color: #FFC107;
+  display: inline;
 }
 
-/*
-  Override global styles (e.g. `button.btn-secondary:hover:not(:disabled)` in `src/assets/main.css`)
-  that can win on hover due to higher specificity and turn the button red.
-*/
-.action-buttons button.btn.btn-secondary {
-  background: linear-gradient(
-    135deg,
-    rgba(15, 36, 55, 0.85) 0%,
-    rgba(10, 58, 46, 0.95) 55%,
-    rgba(4, 120, 87, 0.85) 100%
-  );
-  box-shadow: 0 8px 25px rgba(201, 168, 89, 0.2);
+.hero-subtitle {
+  margin: 0 0 28px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: clamp(16px, 1.8vw, 20px);
+  font-weight: 400;
+  color: #B5B5B5;
+  line-height: 1.5;
+  max-width: 420px;
 }
 
-.action-buttons button.btn.btn-secondary:hover:not(:disabled) {
-  /* Keep the same look (no red), just a subtle lift */
-  background: linear-gradient(
-    135deg,
-    rgba(15, 36, 55, 0.95) 0%,
-    rgba(10, 58, 46, 1) 100%
-  );
-  border-color: rgb(201, 168, 89);
-  box-shadow: 0 12px 35px rgba(201, 168, 89, 0.35);
-  transform: translateY(-3px);
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  animation: fadeIn 0.7s ease 0.3s both;
 }
 
-.action-buttons button.btn.btn-secondary:focus-visible:not(:disabled) {
-  /* No color change on focus, only emphasis */
-  background: linear-gradient(
-    135deg,
-    rgba(15, 36, 55, 0.85) 0%,
-    rgba(10, 58, 46, 0.95) 55%,
-    rgba(4, 120, 87, 0.85) 100%
-  );
-  box-shadow: 0 0 0 3px rgba(201, 168, 89, 0.35), 0 8px 25px rgba(201, 168, 89, 0.2);
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
 }
 
-.action-buttons button.btn.btn-secondary:active:not(:disabled) {
-  /* Press effect without changing color */
-  background: linear-gradient(
-    135deg,
-    rgba(15, 36, 55, 0.85) 0%,
-    rgba(10, 58, 46, 0.95) 55%,
-    rgba(4, 120, 87, 0.85) 100%
-  );
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 6px 18px rgba(201, 168, 89, 0.22);
+.btn-hero--primary {
+  background: #FFC107;
+  color: #0B0B0B;
 }
 
-.action-buttons button.btn.btn-primary {
-  /* Prevent global `button.btn-primary` from changing the banner look */
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(220, 190, 120) 100%);
-  color: #0a3a2e;
-  border-color: rgb(201, 168, 89);
-  box-shadow: 0 8px 25px rgba(201, 168, 89, 0.4);
+.btn-hero--primary:hover {
+  background: #E0A800;
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
 }
 
-.action-buttons button.btn.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(220, 190, 120) 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(201, 168, 89, 0.6);
+.btn-hero--secondary {
+  background: transparent;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
 }
 
-.action-buttons button.btn.btn-primary:focus-visible:not(:disabled) {
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(220, 190, 120) 100%);
-  box-shadow: 0 0 0 3px rgba(201, 168, 89, 0.35), 0 8px 25px rgba(201, 168, 89, 0.4);
+.btn-hero--secondary:hover {
+  background: #FFFFFF;
+  color: #0B0B0B;
 }
 
-.action-buttons button.btn.btn-primary:active:not(:disabled) {
-  /* Press effect without changing color (primary button) */
-  background: linear-gradient(135deg, rgb(201, 168, 89) 0%, rgb(220, 190, 120) 100%);
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 6px 18px rgba(201, 168, 89, 0.35);
-}
-
-.btn svg {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
-}
-
-.btn-primary:hover svg,
-.btn-secondary:hover svg {
-  transform: translateX(3px);
-}
-
-/* Línea decorativa */
-.decorative-line {
-  width: 80px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgb(201, 168, 89), transparent);
-  margin-top: 1rem;
-  animation: slide-up 1s ease-out 0.8s both;
-}
-
-/* Indicador de scroll */
-.scroll-indicator {
+.hero-arrow {
   position: absolute;
-  bottom: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #0B0B0B;
+  border: 1px solid #555555;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 16px;
+}
+
+.hero-arrow:hover {
+  background: #FFC107;
+  border-color: #FFC107;
+  color: #0B0B0B;
+}
+
+.hero-arrow--left {
+  left: 24px;
+}
+
+.hero-arrow--right {
+  right: 24px;
+}
+
+.hero-indicators {
+  position: absolute;
+  bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  gap: 10px;
+}
+
+.hero-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.hero-dot.active {
+  background: #FFC107;
+  border-color: #FFC107;
+}
+
+.hero-dot:hover:not(.active) {
+  border-color: #FFC107;
+}
+
+.benefits-bar {
+  position: relative;
+  width: calc(100% - 80px);
+  max-width: 1320px;
+  margin: -60px auto 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: #1A1A1A;
+  border-radius: 16px;
+  padding: 28px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.benefit-item:last-child {
+  border-right: none;
+}
+
+.benefit-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 193, 7, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.benefit-icon i {
+  color: #FFC107;
+  font-size: 18px;
+}
+
+.benefit-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  animation: slide-up 1s ease-out 1s both;
-  z-index: 10;
-  cursor: pointer;
-  user-select: none;
+  gap: 2px;
 }
 
-.scroll-indicator:focus-visible {
-  outline: 2px solid rgba(201, 168, 89, 0.5);
-  outline-offset: 6px;
-  border-radius: 10px;
+.benefit-text strong {
+  color: #FFFFFF;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
-.scroll-indicator p {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.75);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-  margin: 0;
+.benefit-text span {
+  color: #B5B5B5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
 }
 
-.scroll-arrow {
-  width: 26px;
-  height: 14px;
-  position: relative;
-  animation: bounce-down 2s ease-in-out infinite;
+@media (max-width: 1200px) {
+  .hero-title {
+    font-size: 56px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+  }
+
+  .benefits-bar {
+    width: calc(100% - 40px);
+  }
 }
 
-.scroll-arrow::before,
-.scroll-arrow::after {
-  content: '';
-  position: absolute;
-  top: 6px;
-  width: 14px;
-  height: 2px;
-  background: rgb(201, 168, 89);
-  opacity: 0.95;
-}
-
-.scroll-arrow::before {
-  left: 0;
-  transform: rotate(45deg);
-  transform-origin: left center;
-}
-
-.scroll-arrow::after {
-  right: 0;
-  transform: rotate(-45deg);
-  transform-origin: right center;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .hero-banner {
-    height: 80vh;
-    min-height: 600px;
+    height: auto;
+    min-height: auto;
   }
 
-  .banner-content {
-    gap: 1.5rem;
+  .hero-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 500px;
   }
 
-  .brand-name {
-    font-size: 2rem;
+  .hero-overlay-left {
+    width: 100%;
+    height: 500px;
+    background: rgba(11, 11, 11, 0.7);
   }
 
-  .brand-joyeria {
-    font-size: 1.6rem;
-    letter-spacing: 5px;
-    margin-bottom: 8px;
+  .hero-diagonal-lines {
+    height: 500px;
   }
 
-  .brand-angelie {
-    font-size: 4.2rem;
-    letter-spacing: 8px;
+  .hero-content {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    min-height: 500px;
   }
 
-  .brand-tagline {
-    font-size: 0.95rem;
-    max-width: 90%;
-    margin-top: 0.75rem;
-    line-height: 1.8;
+  .hero-title {
+    font-size: clamp(28px, 7vw, 36px);
   }
 
-  .action-buttons {
-    gap: 1rem;
+  .hero-subtitle {
+    font-size: 18px;
   }
 
-  .btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 0.9rem;
+  .hero-actions {
+    flex-direction: column;
   }
 
-  .logo-circle-banner {
-    width: 100px;
-    height: 100px;
+  .btn-hero {
+    width: 100%;
+    justify-content: center;
   }
 
-  .hero-logo {
-    height: 140px;
-    width: 140px;
+  .hero-arrow {
+    display: none;
   }
 
-  .logo-inner {
-    font-size: 3rem;
+  .hero-indicators {
+    bottom: auto;
+    top: 460px;
   }
 
-  .emerald {
-    filter: blur(30px);
+  .benefits-bar {
+    width: calc(100% - 32px);
+    margin-top: -40px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .benefit-item {
+    padding: 16px 20px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .benefit-item:last-child {
+    border-bottom: none;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-banner {
-    height: 95vh;
-    min-height: 500px;
+  .hero-title {
+    font-size: clamp(22px, 6vw, 28px);
   }
 
-  .hero-logo-container {
-    margin: 0 auto 1rem;
-  }
-
-  .brand-name {
-    font-size: 1.5rem;
-  }
-
-  .brand-joyeria {
-    font-size: 1.35rem;
-    letter-spacing: 4px;
-    margin-bottom: 6px;
-  }
-
-  .brand-angelie {
-    font-size: 3.15rem;
-    letter-spacing: 6px;
-  }
-
-  .brand-tagline {
-    font-size: 0.9rem;
-    line-height: 1.65;
-    margin-top: 0.85rem;
-  }
-
-  .hero-divider {
-    gap: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .divider-line {
-    width: 44px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    width: 100%;
-    padding: 0 1rem;
-    gap: 0.9rem;
-    margin-top: 1.25rem;
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-    padding: 0.9rem 1.5rem;
-  }
-
-  /* En móvil, el secundario se ve como "outline" limpio (como la captura) */
-  .action-buttons button.btn.btn-secondary,
-  .action-buttons button.btn.btn-secondary:hover:not(:disabled),
-  .action-buttons button.btn.btn-secondary:focus-visible:not(:disabled) {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.45);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.22);
-  }
-
-  .hero-logo {
-    height: 100px;
-    width: 100px;
-  }
-
-  /* En celular: indicador debajo de los botones (en flujo normal) */
-  .scroll-indicator {
-    position: relative;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    transform: none;
-    width: 100%;
-    margin-top: 0.85rem;
-    padding-bottom: env(safe-area-inset-bottom);
-    gap: 0.35rem;
-  }
-
-  .scroll-arrow {
-    width: 30px;
-    height: 16px;
+  .hero-subtitle {
+    font-size: 16px;
   }
 }
 </style>

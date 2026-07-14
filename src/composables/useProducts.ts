@@ -17,6 +17,14 @@ export interface Product {
   colors?: string[]
   isShowcase?: boolean
   showcaseImage?: string
+  sku?: string
+  brand?: string
+  isAvailable?: boolean
+  showPrice?: boolean
+  allowQuote?: boolean
+  isFeatured?: boolean
+  isNew?: boolean
+  isOffer?: boolean
   createdAt: Date
   updatedAt?: Date
 }

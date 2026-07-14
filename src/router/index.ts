@@ -113,8 +113,7 @@ const router = createRouter({
     },
     {
       path: '/checkout',
-      name: 'Checkout',
-      component: () => import('../views/Checkout.vue'),
+      redirect: '/',
     },
     {
       path: '/terms-and-conditions',
