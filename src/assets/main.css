@@ -159,9 +159,12 @@ body {
   min-height: 100vh;
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
   background: var(--bg-primary);
   transition: background-color 0.3s ease;
+}
+
+.main-content {
+  padding-top: 117px;
 }
 
 /* Apply font to all form elements explicitly */

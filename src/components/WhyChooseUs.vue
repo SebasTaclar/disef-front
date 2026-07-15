@@ -76,11 +76,8 @@
         </div>
         <div class="why-cta-right">
           <div class="why-cta-buttons">
-            <a href="https://wa.me/573213727442" target="_blank" class="btn btn-yellow">
+            <a href="https://wa.me/573229118168?text=Hola%2C%20me%20interesa%20solicitar%20una%20cotizaci%C3%B3n.%20%C2%BFPodr%C3%ADan%20atenderme%3F" target="_blank" class="btn btn-yellow">
               <i class="fab fa-whatsapp"></i> Solicitar Cotización
-            </a>
-            <a href="tel:+573213727442" class="btn btn-outline">
-              <i class="fas fa-phone"></i> Contactar un Asesor
             </a>
           </div>
           <img src="https://res.cloudinary.com/dlwzazojt/image/upload/v1784053605/WhatsApp_Image_2026-07-04_at_12.02.46_PM_1_sdgzrg.jpg" alt="Productos DISEF" class="why-cta-image" />

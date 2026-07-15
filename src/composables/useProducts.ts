@@ -19,6 +19,7 @@ export interface Product {
   showcaseImage?: string
   sku?: string
   brand?: string
+  brandId?: number
   isAvailable?: boolean
   showPrice?: boolean
   allowQuote?: boolean
@@ -104,7 +105,12 @@ export function useProducts() {
       status: productData.status,
       colors: productData.colors,
       isShowcase: productData.isShowcase,
-      showcaseImage: productData.showcaseImage
+      showcaseImage: productData.showcaseImage,
+      brandId: productData.brandId,
+      sku: productData.sku,
+      isFeatured: productData.isFeatured,
+      isNew: productData.isNew,
+      isOffer: productData.isOffer
     }
 
     // Solo agregar originalPrice si tiene un valor válido (mayor que 0)
@@ -128,6 +134,10 @@ export function useProducts() {
     if (productData.category) {
       updateData.categoryId = parseInt(productData.category)
       delete updateData.category
+    }
+
+    if (!updateData.description || (updateData.description as string).trim() === '') {
+      updateData.description = 'Sin descripción'
     }
 
     // Si originalPrice es 0, undefined, null o vacío, no enviarlo (o enviarlo como null)
@@ -204,7 +214,7 @@ export function useProducts() {
       // Crear el producto en el backend con isShowcase = true
       const createRequest: CreateProductRequest = {
         name: productData.name,
-        description: productData.description,
+      description: productData.description || 'Sin descripción',
         price: productData.price,
         images: [productData.image],
         categoryId: parseInt(productData.category),

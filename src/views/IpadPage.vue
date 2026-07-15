@@ -434,7 +434,6 @@ const addToCartFromModal = () => {
 
     // Pasar el color seleccionado como tercer parámetro
     addToQuotation(mappedProduct, 1, modalSelectedColor.value || undefined)
-    openDrawer()
     closeModal()
   }
 }

@@ -43,7 +43,7 @@ const messages = {
 			followUs: 'Síguenos',
 			quickLinks: 'Enlaces Rápidos',
 			customerSupport: 'Atención al Cliente',
-			madeWith: 'Soluciones para obra, planta y mantenimiento ✨',
+			madeWith: 'Desarrollado por ',
 			copyright: '© {year} DISEF Comercializadora Industrial. Todos los derechos reservados.',
 			links: {
 				products: 'Productos',

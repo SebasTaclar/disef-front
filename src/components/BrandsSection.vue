@@ -1,5 +1,5 @@
 <template>
-  <section class="brands-section">
+  <section id="marcas" class="brands-section">
     <div class="brands-container">
       <header class="brands-header">
         <h2 class="brands-title">Trabajamos con marcas líderes</h2>
@@ -182,6 +182,21 @@ onMounted(() => {
 
   .brand-text {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brands-section {
+    padding: 40px 0;
+  }
+
+  .brand-item {
+    flex: 0 0 120px;
+    padding: 16px 12px;
+  }
+
+  .brand-text {
+    font-size: 12px;
   }
 }
 

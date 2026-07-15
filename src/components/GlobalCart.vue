@@ -15,12 +15,22 @@
             </svg>
             <h3>Mi Cotización</h3>
           </div>
-          <button type="button" @click="closeDrawer" class="drawer-close-btn" aria-label="Cerrar cotización">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 6-12 12"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
+          <div class="drawer-header-actions">
+            <button v-if="quotationItems.length > 0" type="button" @click="confirmClear" class="drawer-clear-btn" aria-label="Limpiar cotización">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18"/>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+              </svg>
+              Limpiar todo
+            </button>
+            <button type="button" @click="closeDrawer" class="drawer-close-btn" aria-label="Cerrar cotización">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m18 6-12 12"/>
+                <path d="m6 6 12 12"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Content -->
@@ -85,8 +95,46 @@
           </div>
         </div>
 
+        <!-- Client Form -->
+        <div v-if="showClientForm" class="drawer-client-form">
+          <h4> Datos para la cotización</h4>
+          <p class="form-subtitle">Complete sus datos para enviar la solicitud</p>
+          <div class="form-field">
+            <label>Nombre o razón social *</label>
+            <input v-model="clientName" type="text" placeholder="Ej: Juan Pérez / Empresa S.A.S" required />
+          </div>
+          <div class="form-field">
+            <label>Ciudad *</label>
+            <input v-model="clientCity" type="text" placeholder="Ej: Bogotá" required />
+          </div>
+          <div class="form-field">
+            <label>Teléfono *</label>
+            <input v-model="clientPhone" type="tel" placeholder="Ej: 300 123 4567" required />
+          </div>
+          <div class="form-field">
+            <label>Email (opcional)</label>
+            <input v-model="clientEmail" type="email" placeholder="Ej: correo@empresa.com" />
+          </div>
+          <div class="form-actions">
+            <button type="button" @click="cancelClientForm" class="btn-cancel-form">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              @click="submitAndSend"
+              class="btn-confirm-send"
+              :disabled="!clientName.trim() || !clientCity.trim() || !clientPhone.trim()"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.051 3.488"/>
+              </svg>
+              Enviar por WhatsApp
+            </button>
+          </div>
+        </div>
+
         <!-- Footer -->
-        <div v-if="quotationItems.length > 0" class="drawer-footer">
+        <div v-if="quotationItems.length > 0 && !showClientForm" class="drawer-footer">
           <div class="drawer-summary">
             <span class="summary-count">{{ totalItems }} productos seleccionados</span>
           </div>
@@ -94,7 +142,7 @@
             <button type="button" @click="closeDrawer" class="btn-continue">
               Continuar explorando
             </button>
-            <button type="button" @click="sendToWhatsApp" class="btn-send-quote">
+            <button type="button" @click="openClientForm" class="btn-send-quote">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.051 3.488"/>
               </svg>
@@ -108,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuotation } from '@/composables/useQuotation'
 
@@ -121,14 +169,52 @@ const {
   removeFromQuotation,
   updateQuantity,
   updateObservations,
+  clearQuotation,
   closeDrawer,
   sendToWhatsApp
 } = useQuotation()
 
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 
+const showClientForm = ref(false)
+const clientName = ref('')
+const clientCity = ref('')
+const clientPhone = ref('')
+const clientEmail = ref('')
+
+const openClientForm = () => {
+  showClientForm.value = true
+}
+
+const cancelClientForm = () => {
+  showClientForm.value = false
+  clientName.value = ''
+  clientCity.value = ''
+  clientPhone.value = ''
+  clientEmail.value = ''
+}
+
+const submitAndSend = () => {
+  if (!clientName.value.trim() || !clientCity.value.trim() || !clientPhone.value.trim()) return
+  sendToWhatsApp({
+    name: clientName.value.trim(),
+    city: clientCity.value.trim(),
+    phone: clientPhone.value.trim(),
+    email: clientEmail.value.trim()
+  })
+  cancelClientForm()
+  closeDrawer()
+}
+
 const updateObs = (productId: string, value: string) => {
   updateObservations(productId, value)
+}
+
+const confirmClear = () => {
+  if (quotationItems.value.length === 0) return
+  if (confirm('¿Estás seguro de que deseas limpiar toda la cotización?')) {
+    clearQuotation()
+  }
 }
 
 watch(
@@ -152,7 +238,7 @@ watch(
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 3000;
+  z-index: 10000;
   backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease;
 }
@@ -221,6 +307,32 @@ watch(
 
 .drawer-close-btn:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.drawer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drawer-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  color: #fca5a5;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.drawer-clear-btn:hover {
+  background: rgba(220, 38, 38, 0.3);
+  border-color: rgba(220, 38, 38, 0.5);
 }
 
 /* Content */
@@ -316,8 +428,8 @@ watch(
 }
 
 .qty-btn {
-  border: 1px solid #ddd;
-  background: #fff;
+  border: 1px solid #e0e0e0;
+  background: #f7f8fa;
   width: 26px;
   height: 26px;
   border-radius: 6px;
@@ -328,22 +440,23 @@ watch(
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
-  color: #333;
+  color: #555;
 }
 
 .qty-btn:hover {
-  border-color: var(--q-gold);
-  color: var(--q-gold);
+  border-color: #FFC107;
+  color: #FFC107;
+  background: #fffde7;
 }
 
 .qty-plus {
-  background: var(--q-gold);
-  border-color: var(--q-gold);
+  background: #FFC107;
+  border-color: #FFC107;
   color: #0b0b0b;
 }
 
 .qty-plus:hover {
-  background: var(--q-gold-deep);
+  background: #FFB300;
 }
 
 .qty-value {
@@ -460,6 +573,110 @@ watch(
   box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
 
+/* Client Form */
+.drawer-client-form {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fafafa;
+}
+
+.drawer-client-form h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.drawer-client-form .form-subtitle {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  color: #888;
+}
+
+.form-field {
+  margin-bottom: 0.85rem;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.3rem;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #333;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #FFC107;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.15);
+}
+
+.form-field input::placeholder {
+  color: #bbb;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn-cancel-form {
+  flex: 1;
+  padding: 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-form:hover {
+  border-color: #bbb;
+  color: #333;
+}
+
+.btn-confirm-send {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 8px;
+  background: #25d366;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-confirm-send:hover:not(:disabled) {
+  background: #1da851;
+}
+
+.btn-confirm-send:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .drawer-panel {
@@ -486,6 +703,10 @@ watch(
 
   .drawer-footer {
     padding: 0.75rem 1rem 1rem;
+  }
+
+  .drawer-client-form {
+    padding: 1rem;
   }
 }
 </style>

@@ -119,7 +119,7 @@ onMounted(async () => {
 })
 
 function goToCategory(category: CategoryMain) {
-  router.push(`/productos?categoria=${category.slug}`)
+  router.push(`/${category.slug}`)
 }
 </script>
 

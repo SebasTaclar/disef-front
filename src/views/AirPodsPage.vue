@@ -316,7 +316,6 @@ function addProductToCart(p: Product) {
     inStock: p.status === 'available',
     originalPrice: p.originalPrice
   }, 1)
-  openDrawer()
 }
 
 onMounted(async () => {

@@ -12,15 +12,15 @@
       <FeaturedProducts />
     </section>
 
-    <section class="section">
+    <section id="promociones" class="section">
       <BrandsSection />
     </section>
 
-    <section class="section">
+    <section id="nosotros" class="section">
       <WhyChooseUs />
     </section>
 
-    <section class="section">
+    <section id="contacto" class="section">
       <ContactSection />
     </section>
 

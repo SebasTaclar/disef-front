@@ -64,6 +64,22 @@ function normalizeProduct(input: unknown): Product {
       ? String(anyProduct.showcaseImage)
       : undefined
 
+    const sku = anyProduct.sku !== undefined && anyProduct.sku !== null
+      ? String(anyProduct.sku)
+      : undefined
+
+    const brand = anyProduct.brand !== undefined && anyProduct.brand !== null
+      ? String(anyProduct.brand)
+      : undefined
+
+    const brandId = anyProduct.brandId !== undefined && anyProduct.brandId !== null
+      ? Number(anyProduct.brandId)
+      : undefined
+
+    const isFeatured = Boolean(anyProduct.isFeatured)
+    const isNew = Boolean(anyProduct.isNew)
+    const isOffer = Boolean(anyProduct.isOffer)
+
     const createdAtRaw = anyProduct.createdAt
     const updatedAtRaw = anyProduct.updatedAt
 
@@ -79,6 +95,12 @@ function normalizeProduct(input: unknown): Product {
       colors,
       isShowcase,
       showcaseImage,
+      sku,
+      brand,
+      brandId,
+      isFeatured,
+      isNew,
+      isOffer,
       createdAt: createdAtRaw ? new Date(String(createdAtRaw)) : new Date(),
       updatedAt: updatedAtRaw ? new Date(String(updatedAtRaw)) : undefined
     }

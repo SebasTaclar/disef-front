@@ -13,6 +13,7 @@ export type Product = {
   showcaseImage?: string
   sku?: string
   brand?: string
+  brandId?: number
   isAvailable?: boolean
   showPrice?: boolean
   allowQuote?: boolean
@@ -36,7 +37,7 @@ export interface CreateProductRequest {
   isShowcase?: boolean
   showcaseImage?: string
   sku?: string
-  brand?: string
+  brandId?: number
   isAvailable?: boolean
   showPrice?: boolean
   allowQuote?: boolean
@@ -58,7 +59,7 @@ export interface UpdateProductRequest {
   isShowcase?: boolean
   showcaseImage?: string
   sku?: string
-  brand?: string
+  brandId?: number
   isAvailable?: boolean
   showPrice?: boolean
   allowQuote?: boolean
@@ -76,12 +77,12 @@ export interface CreateProductResponse {
   originalPrice?: number
   images: string
   categoryId: number
+  brandId?: number | null
   status: string
   colors?: string
   isShowcase: boolean
   showcaseImage?: string
   sku?: string
-  brand?: string
   isAvailable?: boolean
   showPrice?: boolean
   allowQuote?: boolean
