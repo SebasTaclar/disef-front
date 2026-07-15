@@ -1,16 +1,16 @@
 <template>
-  <section class="contact-section">
+  <section id="contact" class="contact-section">
     <div class="contact-container">
-      <!-- Header -->
-      <header class="contact-header">
-        <span class="contact-label">— CONTÁCTANOS —</span>
-        <h2 class="contact-title">¿HABLAMOS DE <span class="highlight">TU PROYECTO</span>?</h2>
-      </header>
-
-      <!-- Main Content -->
       <div class="contact-main">
-        <!-- Left Side -->
-        <div class="contact-left">
+
+        <!-- ── IZQUIERDA ── -->
+        <div class="col-left">
+          <header class="contact-header">
+            <span class="contact-label">— CONTÁCTANOS —</span>
+            <h2 class="contact-title">¿HABLAMOS DE <br/><span class="highlight">TU PROYECTO</span>?</h2>
+            <div class="title-line"></div>
+          </header>
+
           <p class="contact-text">Estamos listos para ayudarte a encontrar la mejor solución eléctrica e industrial. <strong>¡Hablemos!</strong></p>
 
           <div class="contact-whatsapp">
@@ -23,111 +23,69 @@
             </div>
           </div>
 
-          <a href="https://wa.me/573213727442" target="_blank" class="btn-whatsapp">
+          <a href="https://wa.me/573229118168?text=Hola%2C%20me%20interesa%20obtener%20m%C3%A1s%20informaci%C3%B3n.%20%C2%BFPodr%C3%ADan%20atenderme%3F" target="_blank" class="btn-whatsapp">
             <i class="fab fa-whatsapp"></i> ESCRÍBENOS POR WHATSAPP <i class="fas fa-arrow-right"></i>
           </a>
-
-          <!-- Features Grid -->
-          <div class="contact-features">
-            <div class="feature-box">
-              <i class="fas fa-headset"></i>
-              <span class="feature-title">ASESORÍA ESPECIALIZADA</span>
-              <span class="feature-text">Te asesoramos para seleccionar los productos adecuados para tu proyecto con el respaldo de expertos.</span>
-            </div>
-            <div class="feature-box">
-              <i class="fas fa-bolt"></i>
-              <span class="feature-title">RESPUESTA RÁPIDA</span>
-              <span class="feature-text">Nuestro equipo está listo para responder tus consultas y brindarte soluciones oportunas.</span>
-            </div>
-            <div class="feature-box">
-              <i class="fas fa-truck-fast"></i>
-              <span class="feature-title">COBERTURA NACIONAL</span>
-              <span class="feature-text">Enviamos a todo el país con opciones de envío seguras y seguimiento en tiempo real.</span>
-            </div>
-            <div class="feature-box">
-              <i class="fas fa-shield-halved"></i>
-              <span class="feature-title">CONFIANZA Y RESPALDO</span>
-              <span class="feature-text">Más de 20 años acompañando proyectos eléctricos e industriales de nuestros clientes.</span>
-            </div>
-          </div>
         </div>
 
-        <!-- Right Side -->
-        <div class="contact-right">
+        <!-- ── CENTRO + DERECHA ── -->
+        <div class="col-right">
           <div class="contact-info-list">
             <div class="info-row">
-              <div class="info-icon">
-                <i class="fas fa-map-marker-alt"></i>
-              </div>
+              <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
               <div class="info-content">
                 <span class="info-label">Dirección</span>
-                <span class="info-value">Bogotá, Colombia</span>
+                <span class="info-value">Calle 19 # 10 - 50 <br> Oficina 202,  Bogotá</span>
               </div>
             </div>
+            <div class="info-divider"></div>
             <div class="info-row">
-              <div class="info-icon">
-                <i class="fas fa-phone"></i>
-              </div>
-              <div class="info-content">
-                <span class="info-label">Teléfono</span>
-                <span class="info-value">+57 (601) 123 4567</span>
-              </div>
-            </div>
-            <div class="info-row">
-              <div class="info-icon whatsapp">
-                <i class="fab fa-whatsapp"></i>
-              </div>
+              <div class="info-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
               <div class="info-content">
                 <span class="info-label">WhatsApp</span>
-                <span class="info-value">+57 300 123 4567</span>
+                <span class="info-value">+57 322 9118168</span>
               </div>
             </div>
+            <div class="info-divider"></div>
             <div class="info-row">
-              <div class="info-icon">
-                <i class="fas fa-envelope"></i>
-              </div>
+              <div class="info-icon"><i class="fas fa-envelope"></i></div>
               <div class="info-content">
                 <span class="info-label">Correo electrónico</span>
-                <span class="info-value">contacto@disef.com.co</span>
+                <span class="info-value">cidisef@gmail.com</span>
               </div>
             </div>
+            <div class="info-divider"></div>
             <div class="info-row">
-              <div class="info-icon">
-                <i class="fas fa-clock"></i>
-              </div>
+              <div class="info-icon"><i class="fas fa-clock"></i></div>
               <div class="info-content">
                 <span class="info-label">Horario de atención</span>
-                <span class="info-value">Lunes a Viernes<br/>8:00 AM - 6:00 PM</span>
+                <span class="info-value">Lunes a Viernes: <br/> 8:00 AM - 6:00 PM<br/>Sábados: 8:00 AM - 2:00 PM<br/>Domingos: Cerrado</span>
               </div>
             </div>
           </div>
 
           <div class="contact-image">
-            <img src="https://res.cloudinary.com/dlwzazojt/image/upload/v1784053605/WhatsApp_Image_2026-07-04_at_12.02.46_PM_1_sdgzrg.jpg" alt="Productos DISEF" />
+            <img src="https://res.cloudinary.com/dlwzazojt/image/upload/v1784082692/ChatGPT_Image_14_jul_2026__19_56_36-removebg-preview_whi0ju.png" alt="Productos DISEF" />
           </div>
         </div>
+
       </div>
 
-      <!-- Bottom CTA -->
-      <div class="contact-bottom">
-        <div class="bottom-left">
-          <i class="fas fa-phone-alt bottom-icon"></i>
-          <div>
-            <h4>¿No encuentras el producto que buscas?</h4>
-            <p>Nuestro equipo puede ayudarte a encontrar la solución ideal para tu necesidad.</p>
-          </div>
-        </div>
-        <div class="bottom-buttons">
-          <a href="https://wa.me/573213727442" target="_blank" class="btn btn-yellow">
-            <i class="fas fa-file-invoice"></i> SOLICITAR COTIZACIÓN
-          </a>
-          <a href="tel:+573213727442" class="btn btn-outline">
-            <i class="fas fa-phone"></i> LLÁMANOS AHORA
-          </a>
-        </div>
+      <!-- Mapa -->
+      <div class="contact-map">
+        <iframe
+          src="https://maps.google.com/maps?q=Av.%20Ciudad%20de%20Lima%20%23%2010-50%2C%20Santa%20F%C3%A9%2C%20Bogot%C3%A1&t=&z=17&ie=UTF8&iwloc=&output=embed"
+          width="100%"
+          height="250"
+          style="border:0; border-radius: 12px;"
+          :allowfullscreen="true"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Ubicación DISEF">
+        </iframe>
       </div>
 
-      <!-- Trust Badges -->
+      <!-- Trust -->
       <div class="contact-trust">
         <div class="trust-item">
           <i class="fas fa-certificate"></i>
@@ -158,26 +116,40 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: 'ContactSection'
-})
+defineOptions({ name: 'ContactSection' })
 </script>
 
 <style scoped>
 .contact-section {
   padding: 80px 0;
-  background: #FFFFFF;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
 }
 
 .contact-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 clamp(16px, 4vw, 44px);
+  position: relative;
+  z-index: 1;
 }
 
-.contact-header {
-  text-align: center;
+/* ── MAIN GRID ── */
+.contact-main {
+  display: flex;
+  align-items: center;
+  gap: 40px;
   margin-bottom: 50px;
+}
+
+/* ── COLUMNA IZQUIERDA ── */
+.col-left {
+  flex: 0 0 35%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #E5E5E5;
+  padding-right: 40px;
 }
 
 .contact-label {
@@ -192,40 +164,34 @@ defineOptions({
 
 .contact-title {
   margin: 0;
-  font-size: clamp(28px, 3.5vw, 42px);
+  font-size: clamp(32px, 4vw, 48px);
   font-weight: 900;
-  color: #111111;
-  letter-spacing: -0.5px;
+  color: #111;
+  letter-spacing: -1px;
   font-style: italic;
-  line-height: 1.2;
+  line-height: 1;
 }
 
 .contact-title .highlight {
   color: #FFC107;
 }
 
-.contact-main {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  margin-bottom: 40px;
-}
-
-.contact-left {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.title-line {
+  width: 80px;
+  height: 4px;
+  background: #FFC107;
+  margin-top: 16px;
 }
 
 .contact-text {
   font-size: 16px;
-  color: #555555;
+  color: #555;
   line-height: 1.7;
-  margin: 0;
+  margin: 24px 0 0;
 }
 
 .contact-text strong {
-  color: #111111;
+  color: #111;
 }
 
 .contact-whatsapp {
@@ -235,6 +201,7 @@ defineOptions({
   padding: 16px 20px;
   background: #F7F8FA;
   border-radius: 12px;
+  margin-top: 32px;
 }
 
 .whatsapp-icon {
@@ -249,24 +216,21 @@ defineOptions({
 }
 
 .whatsapp-icon i {
-  color: #FFFFFF;
+  color: #fff;
   font-size: 22px;
-}
-
-.whatsapp-info {
-  display: flex;
-  flex-direction: column;
 }
 
 .whatsapp-title {
   font-size: 14px;
   font-weight: 700;
-  color: #111111;
+  color: #111;
+  display: block;
 }
 
 .whatsapp-text {
   font-size: 13px;
-  color: #777777;
+  color: #777;
+  display: block;
 }
 
 .btn-whatsapp {
@@ -276,7 +240,7 @@ defineOptions({
   gap: 10px;
   padding: 14px 28px;
   background: #25D366;
-  color: #FFFFFF;
+  color: #fff;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
@@ -284,6 +248,7 @@ defineOptions({
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
   width: fit-content;
+  margin-top: 24px;
 }
 
 .btn-whatsapp:hover {
@@ -291,11 +256,102 @@ defineOptions({
   transform: translateY(-2px);
 }
 
+/* ── COLUMNA CENTRO + DERECHA ── */
+.col-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+/* ── CENTRO: INFO ── */
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.info-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,193,7,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.info-icon i {
+  font-size: 18px;
+  color: #FFC107;
+}
+
+.info-icon.whatsapp {
+  background: rgba(37,211,102,0.12);
+}
+
+.info-icon.whatsapp i {
+  color: #25D366;
+}
+
+.info-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFC107;
+  display: block;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  display: block;
+}
+
+.info-divider {
+  width: 100%;
+  height: 1px;
+  background: #E5E5E5;
+  margin-left: 60px;
+  width: calc(100% - 60px);
+}
+
+/* ── DERECHA: IMAGEN ── */
+.contact-image {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -10px;
+  margin-top: 10px;
+  z-index: 1;
+}
+
+.contact-image img {
+  position: relative;
+  width: 600px;
+  top: -50px;
+  height: auto;
+  z-index: 1;
+}
+
+/* ── FEATURES ── */
 .contact-features {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-top: 10px;
+  margin-bottom: 40px;
 }
 
 .feature-box {
@@ -316,88 +372,24 @@ defineOptions({
 .feature-title {
   font-size: 12px;
   font-weight: 700;
-  color: #111111;
+  color: #111;
   letter-spacing: 0.5px;
 }
 
 .feature-text {
   font-size: 12px;
-  color: #777777;
+  color: #777;
   line-height: 1.5;
 }
 
-.contact-right {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.contact-info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.info-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.info-row .info-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 193, 7, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.info-row .info-icon i {
-  font-size: 18px;
-  color: #FFC107;
-}
-
-.info-row .info-icon.whatsapp {
-  background: rgba(37, 211, 102, 0.12);
-}
-
-.info-row .info-icon.whatsapp i {
-  color: #25D366;
-}
-
-.info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.info-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #FFC107;
-}
-
-.info-value {
-  font-size: 14px;
-  color: #555555;
-  line-height: 1.5;
-}
-
-.contact-image {
-  border-radius: 16px;
+/* ── MAPA ── */
+.contact-map {
+  margin-bottom: 40px;
+  border-radius: 12px;
   overflow: hidden;
-  height: 200px;
 }
 
-.contact-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
+/* ── BOTTOM CTA ── */
 .contact-bottom {
   display: flex;
   align-items: center;
@@ -424,13 +416,13 @@ defineOptions({
   margin: 0 0 4px;
   font-size: 16px;
   font-weight: 700;
-  color: #111111;
+  color: #111;
 }
 
 .bottom-left p {
   margin: 0;
   font-size: 13px;
-  color: #777777;
+  color: #777;
 }
 
 .bottom-buttons {
@@ -457,7 +449,7 @@ defineOptions({
 
 .btn-yellow {
   background: #FFC107;
-  color: #111111;
+  color: #111;
 }
 
 .btn-yellow:hover {
@@ -467,22 +459,24 @@ defineOptions({
 
 .btn-outline {
   background: transparent;
-  border: 1.5px solid #111111;
-  color: #111111;
+  border: 1.5px solid #111;
+  color: #111;
 }
 
 .btn-outline:hover {
-  background: #111111;
-  color: #FFFFFF;
+  background: #111;
+  color: #fff;
   transform: translateY(-2px);
 }
 
+/* ── TRUST ── */
 .contact-trust {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0;
   padding: 24px 40px;
+  background: #F7F8FA;
   border: 1px solid #E5E5E5;
   border-radius: 12px;
 }
@@ -504,12 +498,12 @@ defineOptions({
 .trust-title {
   font-size: 13px;
   font-weight: 700;
-  color: #111111;
+  color: #111;
 }
 
 .trust-text {
   font-size: 11px;
-  color: #777777;
+  color: #777;
 }
 
 .trust-separator {
@@ -519,27 +513,57 @@ defineOptions({
   flex-shrink: 0;
 }
 
+/* ── RESPONSIVE ── */
+@media (max-width: 1200px) {
+  .contact-image img {
+    width: 450px;
+  }
+  .image-halo {
+    width: 600px;
+    height: 600px;
+  }
+}
+
 @media (max-width: 1024px) {
   .contact-main {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 40px;
   }
-
+  .col-left {
+    flex: 0 0 auto;
+    width: 100%;
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid #E5E5E5;
+    padding-bottom: 40px;
+  }
+  .col-right {
+    flex: 0 0 auto;
+    width: 100%;
+    gap: 30px;
+  }
+  .contact-image {
+    margin-left: 0;
+    margin-top: 0;
+  }
+  .contact-image img {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+  }
   .contact-bottom {
     flex-direction: column;
     gap: 20px;
     text-align: center;
   }
-
   .bottom-left {
     flex-direction: column;
   }
-
   .contact-trust {
     flex-wrap: wrap;
     gap: 20px;
   }
-
   .trust-separator {
     display: none;
   }
@@ -549,32 +573,104 @@ defineOptions({
   .contact-section {
     padding: 60px 0;
   }
-
-  .contact-features {
-    grid-template-columns: 1fr;
+  .contact-main {
+    gap: 30px;
   }
-
+  .contact-title {
+    font-size: clamp(28px, 6vw, 36px);
+  }
+  .contact-text {
+    font-size: 15px;
+  }
+  .info-row {
+    padding: 12px 0;
+  }
+  .info-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .info-icon i {
+    font-size: 16px;
+  }
+  .contact-whatsapp {
+    padding: 14px 16px;
+  }
+  .whatsapp-icon {
+    width: 44px;
+    height: 44px;
+  }
   .bottom-buttons {
     flex-direction: column;
     width: 100%;
   }
-
   .btn {
     justify-content: center;
     width: 100%;
   }
+  .contact-map iframe {
+    height: 200px;
+  }
 }
 
 @media (max-width: 480px) {
+  .contact-section {
+    padding: 40px 0;
+  }
+  .contact-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+  .contact-title {
+    font-size: clamp(24px, 6vw, 32px);
+  }
+  .contact-text {
+    font-size: 14px;
+    margin-top: 16px;
+  }
+  .col-left {
+    padding-bottom: 30px;
+  }
+  .info-divider {
+    margin-left: 0;
+    width: 100%;
+  }
+  .info-row {
+    gap: 12px;
+  }
+  .info-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .info-icon i {
+    font-size: 14px;
+  }
+  .info-label {
+    font-size: 12px;
+  }
+  .info-value {
+    font-size: 13px;
+  }
+  .contact-bottom {
+    padding: 20px;
+  }
+  .bottom-left h4 {
+    font-size: 14px;
+  }
+  .bottom-left p {
+    font-size: 12px;
+  }
   .contact-trust {
     flex-direction: column;
     align-items: flex-start;
+    padding: 20px;
   }
-
   .trust-item {
     align-items: flex-start;
     text-align: left;
-    padding: 0;
+    padding: 8px 0;
+  }
+  .contact-map iframe {
+    height: 180px;
   }
 }
 </style>

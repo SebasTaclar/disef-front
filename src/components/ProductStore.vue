@@ -747,8 +747,6 @@ const addToQuotationFromCard = (event: Event, product: ProductType) => {
     inStock: product.status === 'available',
     originalPrice: product.originalPrice
   }, 1)
-
-  openDrawer()
 }
 
 // Colores/materiales + fallback compatible con nombres comunes

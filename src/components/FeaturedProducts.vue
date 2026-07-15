@@ -25,10 +25,8 @@
             <!-- Imagen - 65% de la tarjeta -->
             <div class="featured-card-image">
               <span class="featured-badge" :class="`featured-badge--${product.badgeType}`">
-                <i v-if="product.badgeType === 'bestseller'" class="fas fa-fire"></i>
-                <i v-else-if="product.badgeType === 'new'" class="fas fa-bolt"></i>
-                <i v-else-if="product.badgeType === 'offer'" class="fas fa-tag"></i>
-                <i v-else-if="product.badgeType === 'featured'" class="fas fa-award"></i>
+                <i v-if="product.badgeType === 'offer'" class="fas fa-tag"></i>
+                <i v-else class="fas fa-award"></i>
                 {{ product.badge }}
               </span>
               <img :src="product.image" :alt="product.name" loading="lazy" />
@@ -38,45 +36,12 @@
             <div class="featured-card-info">
               <span class="featured-brand">{{ product.brand }}</span>
               <h3 class="featured-name">{{ product.name }}</h3>
-              <span class="featured-sku">
-                <span class="sku-label">SKU</span>
-                {{ product.sku }}
-              </span>
 
-              <!-- Estrellas -->
-              <div class="featured-rating">
-                <i v-for="i in 5" :key="i" class="fas fa-star" :class="{ 'empty': i > product.stars }"></i>
-              </div>
 
               <!-- Disponibilidad -->
               <div class="featured-availability" :class="{ 'out-of-stock': !product.inStock }">
                 <span class="availability-dot"></span>
                 {{ product.inStock ? 'Disponible' : 'Bajo pedido' }}
-              </div>
-
-              <!-- Especificaciones -->
-              <div class="featured-specs">
-                <div class="spec-item" v-if="product.specs?.voltage">
-                  <i class="fas fa-bolt"></i>
-                  <div class="spec-content">
-                    <span class="spec-title">Voltaje</span>
-                    <span class="spec-value">{{ product.specs.voltage }}</span>
-                  </div>
-                </div>
-                <div class="spec-item" v-if="product.specs?.class">
-                  <i class="fas fa-shield-alt"></i>
-                  <div class="spec-content">
-                    <span class="spec-title">Clase</span>
-                    <span class="spec-value">{{ product.specs.class }}</span>
-                  </div>
-                </div>
-                <div class="spec-item" v-if="product.specs?.material">
-                  <i class="fas fa-box"></i>
-                  <div class="spec-content">
-                    <span class="spec-title">Material</span>
-                    <span class="spec-value">{{ product.specs.material }}</span>
-                  </div>
-                </div>
               </div>
 
               <!-- Botones -->
@@ -106,11 +71,19 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
 import { useQuotation } from '@/composables/useQuotation'
+import { useBrands } from '@/composables/useBrands'
 
 const router = useRouter()
 const trackRef = ref<HTMLElement | null>(null)
 const { products: allProducts, loadProducts } = useProducts()
 const { addToQuotation, openDrawer } = useQuotation()
+const { brands, loadBrands } = useBrands()
+
+const getBrandName = (brandId?: number): string => {
+  if (!brandId) return 'DISEF'
+  const found = brands.value.find(b => Number(b.id) === brandId)
+  return found?.name || 'DISEF'
+}
 
 interface FeaturedProduct {
   id: string
@@ -124,11 +97,6 @@ interface FeaturedProduct {
   price: number
   stars: number
   slug?: string
-  specs?: {
-    voltage?: string
-    class?: string
-    material?: string
-  }
 }
 
 const products = computed<FeaturedProduct[]>(() => {
@@ -137,35 +105,28 @@ const products = computed<FeaturedProduct[]>(() => {
     .slice(0, 8)
     .map(p => {
       const hasDiscount = p.originalPrice && p.originalPrice > p.price
-      let badge = 'DESTACADO'
-      let badgeType: FeaturedProduct['badgeType'] = 'featured'
-
-      if (p.isNew) { badge = 'NUEVO'; badgeType = 'new' }
-      else if (hasDiscount) { badge = 'OFERTA'; badgeType = 'offer' }
-      else if (p.isFeatured) { badge = 'MÁS VENDIDO'; badgeType = 'bestseller' }
+      const hasColor = p.colors && p.colors.length > 0
+      let badge = hasDiscount ? 'CON DESCUENTO' : 'PRECIO NORMAL'
+      let badgeType: FeaturedProduct['badgeType'] = hasDiscount ? 'offer' : 'featured'
 
       return {
         id: p.id,
         name: p.name,
-        brand: p.brand || 'DISEF',
+        brand: getBrandName(p.brandId),
         sku: p.sku || 'N/A',
         image: p.images?.[0] || 'https://placehold.co/400x400/1a1a1a/ffffff?text=Producto',
         badge,
         badgeType,
         inStock: p.status === 'available',
         price: p.price,
-        stars: 5,
-        specs: {
-          voltage: '500V',
-          class: '00',
-          material: 'Látex'
-        }
+        stars: 5
       }
     })
 })
 
 onMounted(async () => {
   await loadProducts()
+  await loadBrands()
 })
 
 function goToProducts() {
@@ -187,9 +148,8 @@ function addToQuote(product: FeaturedProduct) {
     category: '',
     description: '',
     inStock: product.inStock
-  }, 1)
-  openDrawer()
-}
+    }, 1)
+  }
 
 function prevSlide() {
   if (trackRef.value) {
@@ -437,40 +397,7 @@ function nextSlide() {
   min-height: 44px;
 }
 
-/* SKU */
-.featured-sku {
-  font-size: 11px;
-  color: #666666;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 
-.sku-label {
-  background: #333333;
-  color: #888888;
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-/* Estrellas */
-.featured-rating {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.featured-rating i {
-  color: #FFC107;
-  font-size: 12px;
-}
-
-.featured-rating i.empty {
-  color: #333333;
-}
 
 /* Disponibilidad */
 .featured-availability {
@@ -611,7 +538,7 @@ function nextSlide() {
    ============================================ */
 .featured-arrow {
   position: absolute;
-  top: 50%;
+  top: -30px;
   transform: translateY(-50%);
   width: 48px;
   height: 48px;

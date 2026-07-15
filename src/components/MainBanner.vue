@@ -29,13 +29,13 @@
           <p class="hero-subtitle">Calidad, seguridad y eficiencia en cada proyecto.</p>
 
           <div class="hero-actions">
-            <button class="btn-hero btn-hero--primary" @click="scrollToProducts">
-              <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+            <a href="https://wa.me/573229118168?text=Hola%2C%20me%20interesa%20solicitar%20una%20cotizaci%C3%B3n.%20%C2%BFPodr%C3%ADan%20atenderme%3F" target="_blank" class="btn-hero btn-hero--primary">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i>
               <span>Solicitar cotización</span>
-            </button>
+            </a>
             <button class="btn-hero btn-hero--secondary" @click="scrollToContact">
-              <i class="fas fa-file-lines" aria-hidden="true"></i>
-              <span>Solicitar cotización</span>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <span>Contáctanos</span>
             </button>
           </div>
         </div>
@@ -309,6 +309,7 @@ defineOptions({
   cursor: pointer;
   transition: all 0.25s ease;
   border: none;
+  text-decoration: none;
 }
 
 .btn-hero--primary {
@@ -559,6 +560,41 @@ defineOptions({
 
   .hero-subtitle {
     font-size: 16px;
+  }
+
+  .hero-bg-img {
+    height: 420px;
+  }
+
+  .hero-overlay-left {
+    height: 420px;
+  }
+
+  .hero-diagonal-lines {
+    height: 420px;
+  }
+
+  .hero-content {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    min-height: 420px;
+  }
+
+  .hero-indicators {
+    top: 380px;
+  }
+
+  .benefit-item {
+    padding: 14px 16px;
+  }
+
+  .benefit-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .benefit-text {
+    font-size: 13px;
   }
 }
 </style>

@@ -95,7 +95,7 @@ const clearCustomValidityMessage = (event: Event) => {
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  padding: 2rem;
+  padding: 4rem;
   background: var(--bg-gradient-primary);
   position: relative;
   transition: all 0.3s ease;
@@ -228,8 +228,8 @@ const clearCustomValidityMessage = (event: Event) => {
 
 .btn-primary {
   width: 100%;
-  background: var(--primary-gradient);
-  color: white;
+  background: linear-gradient(135deg, #FFC107, #FFB300);
+  color: #111;
   border: none;
   border-radius: 12px;
   padding: 16px 24px;
@@ -237,16 +237,15 @@ const clearCustomValidityMessage = (event: Event) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px var(--primary-color-alpha-30);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
   font-family: var(--font-primary);
   margin-top: 1rem;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--primary-color-alpha-40);
-  background: var(--primary-gradient-hover);
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+  background: linear-gradient(135deg, #FFD548, #FFC107);
 }
 
 .btn-primary:disabled {

@@ -8,7 +8,7 @@
             <div class="logo-circle-footer">
               <img src="/images/logof.png" alt="DISEF Comercializadora Industrial" />
             </div>
-            <h2 class="footer-brand-title">DISEF Comercializadora Industrial</h2>
+            <h2 class="footer-brand-title">DISEF <br /> Comercializadora Industrial</h2>
           </div>
           <p class="footer-description">{{ $t('footer.description') }}</p>
 
@@ -43,7 +43,6 @@
           <ul class="footer-links">
             <li><RouterLink to="/terms-and-conditions">{{ $t('footer.links.shippingPolicy') }}</RouterLink></li>
             <li><RouterLink to="/terms-and-conditions">{{ $t('footer.links.returns') }}</RouterLink></li>
-            <li><RouterLink to="/terms-and-conditions">{{ $t('footer.links.faq') }}</RouterLink></li>
             <li><RouterLink to="/terms-and-conditions">{{ $t('footer.links.terms') }}</RouterLink></li>
           </ul>
         </div>
@@ -52,10 +51,14 @@
 
     <div class="footer-bottom">
       <div class="footer-container">
-        <p class="copyright">{{ $t('footer.copyright', { year: 2025 }) }}</p>
-        <p class="made-with">{{ $t('footer.madeWith') }}</p>
+        <p class="copyright">{{ $t('footer.copyright', { year: 2026 }) }}</p>
+        <p class="made-with">
+          {{ $t('footer.madeWith') }}
+          <a href="https://www.dataor.org" target="_blank" rel="noopener noreferrer" class="dataor-link">DataOr</a>
+        </p>
       </div>
     </div>
+
   </footer>
 </template>
 
@@ -274,6 +277,20 @@
 
 .made-with {
   color: #FFC107;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dataor-link {
+  color: #FFC107;
+  text-decoration: none;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+}
+
+.dataor-link:hover {
+  opacity: 0.8;
 }
 
 /* Responsive Design */
@@ -353,6 +370,28 @@
   .footer-links a,
   .contact-list li {
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-content {
+    padding: 0 1rem;
+  }
+
+  .footer-bottom {
+    padding: 20px 0;
+  }
+
+  .footer-bottom .footer-container {
+    gap: 12px;
+  }
+
+  .copyright-text {
+    font-size: 12px;
+  }
+
+  .footer-brand-description {
+    font-size: 13px;
   }
 }
 </style>

@@ -81,9 +81,37 @@ const router = createRouter({
     },
 
     {
+      path: '/productos',
+      name: 'productos',
+      component: () => import('../views/CategoryProducts.vue'),
+      props: { slug: 'todos', title: 'Todos los Productos' },
+    },
+
+    {
       path: '/ofertas',
       name: 'ofertas',
       component: () => import('../views/AirPodsPage.vue'),
+    },
+
+    {
+      path: '/servicios',
+      name: 'servicios',
+      component: () => import('../views/Servicios.vue'),
+    },
+
+    {
+      path: '/promociones',
+      redirect: '/#products',
+    },
+
+    {
+      path: '/nosotros',
+      redirect: '/#nosotros',
+    },
+
+    {
+      path: '/contacto',
+      redirect: '/#contacto',
     },
 
     {
@@ -135,6 +163,15 @@ const router = createRouter({
       name: 'payment-pending',
       component: () => import('../views/PaymentPending.vue'),
     },
+
+    // Dynamic category route - must be before catch-all
+    {
+      path: '/:slug',
+      name: 'category-dynamic',
+      component: () => import('../views/CategoryProducts.vue'),
+      props: true,
+    },
+
     // Catch-all route - debe ir al final
     {
       path: '/:pathMatch(.*)*',

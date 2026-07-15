@@ -52,36 +52,47 @@ watch(quotationItems, (newItems) => {
   saveToStorage(newItems)
 }, { deep: true })
 
-function buildWhatsAppMessage(items: QuotationItem[]): string {
+function buildWhatsAppMessage(items: QuotationItem[], clientData?: { name: string; city: string; phone: string; email: string }): string {
+  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0)
   const lines: string[] = []
-  lines.push('Hola DISEF.')
+
+  lines.push('Hola, DISEF.')
   lines.push('')
-  lines.push('Estoy interesado en recibir una cotización de los siguientes productos:')
+  lines.push('Me gustaria solicitar una cotizacion de los siguientes productos:')
   lines.push('')
 
   items.forEach((item, index) => {
-    lines.push('━━━━━━━━━━━━━━━━━━━━━━')
-    lines.push('')
-    lines.push(`${index + 1}.`)
-    lines.push(`${item.name}`)
-    lines.push('')
-    lines.push(`SKU: ${item.sku}`)
-    lines.push(`Marca: ${item.brand}`)
-    lines.push(`Cantidad: ${item.quantity}`)
+    lines.push(`${index + 1}. ${item.name}`)
+    lines.push(`   Marca: ${item.brand}`)
+    lines.push(`   SKU: ${item.sku}`)
+    lines.push(`   Cantidad: ${item.quantity}`)
     if (item.observations && item.observations.trim()) {
-      lines.push(`Observación: ${item.observations}`)
+      lines.push(`   Nota: ${item.observations}`)
     }
     lines.push('')
   })
 
-  lines.push('━━━━━━━━━━━━━━━━━━━━━━')
+  lines.push(`Total de articulos: ${totalQuantity}`)
   lines.push('')
-  lines.push('Nombre: ')
-  lines.push('Empresa: ')
-  lines.push('Ciudad: ')
-  lines.push('Teléfono: ')
+
+  if (clientData) {
+    lines.push('Mis datos:')
+    lines.push(`   Nombre: ${clientData.name}`)
+    lines.push(`   Ciudad: ${clientData.city}`)
+    lines.push(`   Telefono: ${clientData.phone}`)
+    if (clientData.email) {
+      lines.push(`   Email: ${clientData.email}`)
+    }
+  } else {
+    lines.push('Mis datos:')
+    lines.push('   Nombre:')
+    lines.push('   Ciudad:')
+    lines.push('   Telefono:')
+    lines.push('   Email:')
+  }
+
   lines.push('')
-  lines.push('Muchas gracias.')
+  lines.push('Quedo atento. Muchas gracias.')
 
   return lines.join('\n')
 }
@@ -164,8 +175,8 @@ export function useQuotation() {
     isDrawerOpen.value = false
   }
 
-  const sendToWhatsApp = () => {
-    const message = buildWhatsAppMessage(quotationItems.value)
+  const sendToWhatsApp = (clientData?: { name: string; city: string; phone: string; email: string }) => {
+    const message = buildWhatsAppMessage(quotationItems.value, clientData)
     const encoded = encodeURIComponent(message)
     window.open(`https://wa.me/573229118168?text=${encoded}`, '_blank')
   }

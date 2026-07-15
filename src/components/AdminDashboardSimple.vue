@@ -19,7 +19,7 @@
         >
           <span class="nav-icon" v-html="item.icon"></span>
           <span class="nav-label">{{ item.label }}</span>
-          <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
+          <span v-if="'badge' in item && item.badge" class="nav-badge">{{ item.badge }}</span>
         </button>
       </nav>
 
@@ -68,13 +68,6 @@
         </div>
 
         <div class="topbar-actions">
-          <button class="action-btn" title="Notificaciones">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            <span class="badge">3</span>
-          </button>
           <div class="topbar-divider"></div>
           <div class="topbar-user">
             <div class="user-avatar">
@@ -334,7 +327,6 @@
               <div class="cat-stat-info">
                 <span class="cat-stat-value">{{ products.length }}</span>
                 <span class="cat-stat-label">Total productos</span>
-                <span class="cat-stat-sub">Todos los registros</span>
               </div>
             </div>
             <div class="cat-stat-card">
@@ -347,7 +339,6 @@
               <div class="cat-stat-info">
                 <span class="cat-stat-value">{{ products.filter(p => p.status === 'available').length }}</span>
                 <span class="cat-stat-label">Productos activos</span>
-                <span class="cat-stat-sub">{{ Math.round((products.filter(p => p.status === 'available').length / (products.length || 1)) * 100) }}% del total</span>
               </div>
             </div>
             <div class="cat-stat-card">
@@ -361,7 +352,6 @@
               <div class="cat-stat-info">
                 <span class="cat-stat-value">{{ products.filter(p => p.status === 'out-of-stock').length }}</span>
                 <span class="cat-stat-label">Productos sin stock</span>
-                <span class="cat-stat-sub">Requieren atención</span>
               </div>
             </div>
             <div class="cat-stat-card">
@@ -375,8 +365,19 @@
               </div>
               <div class="cat-stat-info">
                 <span class="cat-stat-value">{{ products.filter(p => p.isShowcase).length }}</span>
-                <span class="cat-stat-label">Productos en oferta</span>
-                <span class="cat-stat-sub">Activos actualmente</span>
+                <span class="cat-stat-label">Productos destacados</span>
+              </div>
+            </div>
+            <div class="cat-stat-card">
+              <div class="cat-stat-icon orange">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="cat-stat-info">
+                <span class="cat-stat-value">{{ products.filter(p => p.status === 'coming-soon').length }}</span>
+                <span class="cat-stat-label">Productos próximamente</span>
               </div>
             </div>
           </div>
@@ -422,7 +423,8 @@
                   <th class="col-check"><input type="checkbox" /></th>
                   <th class="col-product">Producto</th>
                   <th class="col-category">Categoría</th>
-                  <th class="col-price">Precio</th>
+                  <th class="col-purchase">Tipo de compra</th>
+                  <th class="col-brand">Marca</th>
                   <th class="col-status">Estado</th>
                   <th class="col-featured">Destacado</th>
                   <th class="col-actions">Acciones</th>
@@ -446,8 +448,12 @@
                   <td class="col-category">
                     <span class="prod-category-badge">{{ getCategoryName(product.category) }}</span>
                   </td>
-                  <td class="col-price">
-                    <span class="prod-price">${{ product.price.toLocaleString() }}</span>
+                  <td class="col-purchase">
+                    <span v-if="getPurchaseType(product)" class="prod-purchase-badge">{{ getPurchaseType(product) }}</span>
+                    <span v-else class="prod-purchase-badge prod-purchase-empty">Sin definir</span>
+                  </td>
+                  <td class="col-brand">
+                    <span class="prod-brand-text">{{ getBrandNameById(product.brandId) }}</span>
                   </td>
                   <td class="col-status">
                     <span :class="['prod-status-badge', product.status]">{{ getStatusText(product.status) }}</span>
@@ -1052,22 +1058,15 @@
               <label>Descripción</label>
               <textarea v-model="productForm.description" class="form-input" rows="3" placeholder="Describe las características principales del producto"></textarea>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Precio *</label>
-                <div class="price-input">
-                  <span class="currency">$</span>
-                  <input :value="formatPriceInput(productForm.price)" @input="handlePriceInput($event, 'price')" type="text" class="form-input" required placeholder="0" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Precio Original (descuento)</label>
-                <div class="price-input">
-                  <span class="currency">$</span>
-                  <input :value="formatPriceInput(productForm.originalPrice)" @input="handlePriceInput($event, 'originalPrice')" type="text" class="form-input" placeholder="0" />
-                </div>
-              </div>
+            <div class="form-group">
+              <label>Marca</label>
+              <select v-model="productForm.brandId" class="form-input" number>
+                <option :value="undefined">Seleccionar marca</option>
+                <option v-for="brand in brands" :key="brand.id" :value="Number(brand.id)">{{ brand.name }}</option>
+              </select>
             </div>
+            <input type="hidden" :value="productForm.price" />
+            <input type="hidden" :value="productForm.originalPrice" />
             <div class="form-row">
               <div class="form-group">
                 <label>Categoría *</label>
@@ -1093,29 +1092,43 @@
               <p class="form-help">Marcar para mostrar en la sección de Productos Destacados del inicio</p>
             </div>
             <div class="form-group">
-              <label>Materiales Disponibles</label>
-              <div class="materials-grid">
-                <button v-for="material in materialOptions" :key="material" type="button" class="material-chip" :class="{ selected: isMaterialSelected(material) }" @click="toggleProductMaterial(material)">
-                  {{ material }}
+              <label>Tipo de compra</label>
+              <div class="material-tags">
+                <button type="button" v-for="option in ['Con descuento', 'Precio normal']" :key="option" class="material-tag" :class="{ selected: isMaterialSelected(option) }" @click="toggleProductMaterial(option)">
+                  {{ option }}
                 </button>
-              </div>
-              <div v-if="productForm.colors.length > 0" class="selected-materials">
-                <span class="selected-label">Seleccionados: </span>
-                <span class="selected-list">{{ productForm.colors.join(', ') }}</span>
               </div>
             </div>
             <div class="form-group">
-              <label>Imagen del Producto (URL) *</label>
+              <label>Imágenes del Producto (URL) *</label>
               <div class="image-urls">
-                <div class="image-url-row">
-                  <input :value="productForm.images[0]" @input="(e) => updateImageUrl(0, (e.target as HTMLInputElement).value)" type="text" class="form-input" placeholder="https://ejemplo.com/imagen.jpg" />
+                <div v-for="(url, index) in productForm.images" :key="index" class="image-url-row">
+                  <input :value="productForm.images[index]" @input="(e) => updateImageUrl(index, (e.target as HTMLInputElement).value)" type="text" class="form-input" :placeholder="'https://ejemplo.com/imagen' + (index + 1) + '.jpg'" />
+                  <button v-if="productForm.images.length > 1" type="button" class="btn-remove-url" @click="removeImageUrl(index)" title="Eliminar URL">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
+                <button type="button" class="btn-add-url" @click="addImageUrl">
+                  <i class="fas fa-plus"></i> Agregar otra imagen
+                </button>
               </div>
 
-              <div v-if="productForm.images[0] && productForm.images[0].trim()" class="images-preview-grid" style="margin-top: 12px;">
-                <div class="image-preview-item">
-                  <img :src="getPreviewUrl(productForm.images[0])" alt="Vista previa" />
-                  <span class="image-index">Principal</span>
+              <div v-if="productForm.images.some(i => i.trim())" class="images-preview-grid" style="margin-top: 12px;">
+                <div v-for="(url, index) in productForm.images.filter(i => i.trim())" :key="index" class="image-preview-item" :class="{ 'is-main': index === 0 }">
+                  <img :src="getPreviewUrl(url)" alt="Vista previa" />
+                  <span v-if="index === 0" class="main-badge">Principal</span>
+                  <span class="image-index">Imagen {{ index + 1 }}</span>
+                  <div class="image-actions">
+                    <button v-if="index > 0" type="button" class="img-action-btn" @click="moveImage(index, -1)" title="Mover atrás">
+                      <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button v-if="index < productForm.images.filter(i => i.trim()).length - 1" type="button" class="img-action-btn" @click="moveImage(index, 1)" title="Mover adelante">
+                      <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button v-if="index !== 0" type="button" class="img-action-btn img-action-main" @click="setAsMainImage(url)" title="Establecer como principal">
+                      <i class="fas fa-star"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1127,9 +1140,6 @@
                 </svg>
                 <p>Pega una URL de imagen para ver la vista previa</p>
               </div>
-            </div>
-            <div v-if="productForm.originalPrice && productForm.originalPrice > productForm.price" class="discount-info">
-              <span class="discount-badge">💰 Descuento: {{ Math.round(((productForm.originalPrice - productForm.price) / productForm.originalPrice) * 100) }}%</span>
             </div>
             <div class="form-actions">
               <button type="button" class="btn btn-secondary" @click="closeProductForm">Cancelar</button>
@@ -1274,16 +1284,7 @@ const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
   { id: 'products', label: 'Productos', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>' },
   { id: 'categories', label: 'Categorías', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>' },
-  { id: 'brands', label: 'Marcas', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg>' },
-  { id: 'orders', label: 'Pedidos', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>', badge: '12' },
-  { id: 'clients', label: 'Clientes', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
-  { id: 'inventory', label: 'Inventario', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>' },
-  { id: 'sales', label: 'Cotizaciones', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' },
-  { id: 'whatsapp-quotes', label: 'Cotizaciones WhatsApp', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.051 3.488"/></svg>' },
-  { id: 'blog', label: 'Blog', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' },
-  { id: 'banners', label: 'Banners', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' },
-  { id: 'users', label: 'Usuarios', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
-  { id: 'settings', label: 'Configuración', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' }
+  { id: 'brands', label: 'Marcas', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg>' }
 ]
 
 const dashboardStats = computed(() => [
@@ -1456,13 +1457,14 @@ const loadPurchases = async () => {
 const productForm = ref({
   name: '',
   description: '',
-  price: 0,
+  price: 10000,
   originalPrice: 0,
   images: [''] as string[],
   category: '',
   status: 'available' as 'available' | 'out-of-stock' | 'coming-soon',
   colors: [] as string[],
-  isShowcase: false
+  isShowcase: false,
+  brandId: undefined as number | undefined
 })
 
 const getPreviewUrl = (url: string) => url || ''
@@ -1541,13 +1543,28 @@ const handleLogout = () => {
 }
 
 const getStatusText = (status: string) => ({ 'available': 'Disponible', 'out-of-stock': 'Sin Stock', 'coming-soon': 'Próximamente' }[status] || status)
+
+const getBrandNameById = (brandId?: number): string => {
+  if (!brandId) return 'Sin marca'
+  const found = brands.value.find(b => Number(b.id) === brandId)
+  return found?.name || 'Sin marca'
+}
+
+const getPurchaseType = (product: Product): string => {
+  if (!product.colors || product.colors.length === 0) return ''
+  const val = normalizeString(product.colors[0])
+  if (val === 'con descuento' || val === 'esmeralda') return 'Con descuento'
+  if (val === 'precio normal' || val === 'oro' || val === 'plata') return 'Precio normal'
+  return product.colors[0]
+}
 const getSaleStatusText = (status: string) => ({ 'completed': 'Completada', 'pending': 'Pendiente', 'cancelled': 'Cancelada' }[status] || status)
 const formatDate = (date: Date) => date.toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })
 const getProductsInCategory = (categoryId: string) => products.value.filter(p => p.category === categoryId).length
 
 const editProduct = (product: Product) => {
   editingProduct.value = product
-  productForm.value = { name: product.name, description: product.description, price: product.price, originalPrice: product.originalPrice || 0, images: product.images ? [...product.images] : [''], category: product.category, status: product.status, colors: product.colors ? [...product.colors] : [], isShowcase: product.isShowcase || false }
+  const mappedColors = product.colors ? product.colors.map(c => getPurchaseType({ ...product, colors: [c] })).filter(Boolean) : []
+  productForm.value = { name: product.name, description: product.description, price: product.price, originalPrice: product.originalPrice || 0, images: product.images ? [...product.images] : [''], category: product.category, status: product.status, colors: mappedColors, isShowcase: product.isShowcase || false, brandId: product.brandId || undefined }
   showProductForm.value = true
 }
 
@@ -1576,12 +1593,39 @@ const isFormValid = computed(() => {
 
 const updateImageUrl = (index: number, value: string) => { productForm.value.images[index] = value }
 
+const addImageUrl = () => { productForm.value.images.push('') }
+
+const removeImageUrl = (index: number) => {
+  if (productForm.value.images.length > 1) {
+    productForm.value.images.splice(index, 1)
+  }
+}
+
+const moveImage = (filteredIndex: number, direction: -1 | 1) => {
+  const filled = productForm.value.images.filter(i => i.trim())
+  const url = filled[filteredIndex]
+  const targetIndex = filteredIndex + direction
+  if (targetIndex < 0 || targetIndex >= filled.length) return
+  const actualFrom = productForm.value.images.indexOf(url)
+  const targetUrl = filled[targetIndex]
+  const actualTo = productForm.value.images.indexOf(targetUrl)
+  productForm.value.images[actualFrom] = targetUrl
+  productForm.value.images[actualTo] = url
+}
+
+const setAsMainImage = (url: string) => {
+  const actualIndex = productForm.value.images.indexOf(url)
+  if (actualIndex > 0) {
+    productForm.value.images.splice(actualIndex, 1)
+    productForm.value.images.unshift(url)
+  }
+}
+
 const normalizeString = (str: string): string => str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ')
 const isMaterialSelected = (material: string) => productForm.value.colors.some(c => normalizeString(c) === normalizeString(material))
 const toggleProductMaterial = (material: string) => {
   const idx = productForm.value.colors.findIndex(c => normalizeString(c) === normalizeString(material))
-  if (idx > -1) productForm.value.colors.splice(idx, 1)
-  else productForm.value.colors.push(material)
+  productForm.value.colors = idx > -1 ? [] : [material]
 }
 
 const formatPriceInput = (value: number): string => { if (!value || value === 0) return ''; return value.toLocaleString('es-CO') }
@@ -1612,7 +1656,7 @@ const saveCategory = async () => {
 const closeProductForm = () => {
   showProductForm.value = false
   editingProduct.value = null
-  productForm.value = { name: '', description: '', price: 0, originalPrice: 0, images: [''], category: '', status: 'available', colors: [], isShowcase: false }
+  productForm.value = { name: '', description: '', price: 10000, originalPrice: 0, images: [''], category: '', status: 'available', colors: [], isShowcase: false, brandId: undefined }
 }
 
 const closeCategoryForm = () => {
@@ -1706,7 +1750,8 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
   --topbar-h: 64px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: var(--c-light);
   color: var(--c-black);
 }
@@ -1723,7 +1768,7 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
   bottom: 0;
   z-index: 100;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .sidebar-header {
@@ -1833,7 +1878,8 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
   margin-left: var(--sidebar-w);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 /* ===== TOPBAR ===== */
@@ -2538,7 +2584,8 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
 
 .products-table .col-product { min-width: 250px; }
 .products-table .col-category { min-width: 140px; }
-.products-table .col-price { min-width: 100px; }
+.products-table .col-purchase { min-width: 120px; }
+.products-table .col-brand { min-width: 120px; }
 .products-table .col-status { min-width: 100px; }
 .products-table .col-featured { min-width: 70px; text-align: center; }
 
@@ -2599,10 +2646,25 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
   font-weight: 500;
 }
 
-.prod-price {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--c-black);
+.prod-purchase-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #EDE9FE;
+  color: #5B21B6;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.prod-purchase-empty {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.prod-brand-text {
+  font-size: 0.85rem;
+  color: var(--c-text);
+  font-weight: 500;
 }
 
 .prod-status-badge {
@@ -2673,7 +2735,7 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
 /* ===== CATEGORIES TABLE ===== */
 .cat-stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -2702,6 +2764,7 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
 .cat-stat-icon.green { background: rgba(16,185,129,0.12); color: var(--c-success); }
 .cat-stat-icon.red { background: rgba(239,68,68,0.12); color: var(--c-danger); }
 .cat-stat-icon.blue { background: rgba(59,130,246,0.12); color: var(--c-info); }
+.cat-stat-icon.orange { background: rgba(249,115,22,0.12); color: #F97316; }
 
 .cat-stat-info {
   display: flex;
@@ -3190,6 +3253,35 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
 
 .materials-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 
+.material-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.material-tag {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--c-border);
+  background: var(--c-light);
+  color: var(--c-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.material-tag:hover {
+  border-color: var(--c-primary);
+}
+
+.material-tag.selected {
+  background: var(--c-primary);
+  color: var(--c-black);
+  border-color: var(--c-primary);
+  font-weight: 600;
+}
+
 .material-chip {
   padding: 8px 14px;
   border-radius: 8px;
@@ -3215,6 +3307,48 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
 .image-urls { display: flex; flex-direction: column; gap: 8px; }
 .image-url-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
 
+.btn-remove-url {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #ef4444;
+  background: white;
+  color: #ef4444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-remove-url:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-add-url {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px dashed #d4ac43;
+  background: transparent;
+  color: #d4ac43;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  width: fit-content;
+}
+
+.btn-add-url:hover {
+  background: rgba(212, 172, 67, 0.1);
+  border-color: #b8952f;
+}
+
 .images-preview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -3225,25 +3359,51 @@ const openWhatsApp = (quote: { phone: string; name: string }) => {
   position: relative;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--c-border);
+  border: 2px solid var(--c-border);
   background: var(--c-light);
+}
+
+.image-preview-item.is-main {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 2px rgba(var(--c-primary-rgb), 0.2);
 }
 
 .image-preview-item img { width: 100%; height: 80px; object-fit: cover; display: block; }
 
-.img-action-btn {
+.main-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--c-primary);
+  color: var(--c-black);
+  padding: 1px 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.image-actions {
   position: absolute;
   bottom: 4px;
   left: 4px;
+  right: 4px;
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+}
+
+.img-action-btn {
   background: rgba(0,0,0,0.6);
   color: white;
   border: none;
-  padding: 2px 6px;
+  padding: 3px 6px;
   font-size: 0.6rem;
   border-radius: 4px;
   cursor: pointer;
 }
-.img-action-btn.primary { background: var(--c-primary); color: var(--c-black); }
+.img-action-btn:hover { background: rgba(0,0,0,0.8); }
+.img-action-main { color: #fbbf24; }
 .img-action-btn:disabled { opacity: 0.4; cursor: default; }
 
 .image-index {

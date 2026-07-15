@@ -173,10 +173,9 @@ const addToQuotationFromModal = () => {
   }
 
   addToQuotation(mapped, 1, observations.value || undefined)
-  observations.value = ''
-  emit('close')
-  openDrawer()
-}
+    observations.value = ''
+    emit('close')
+  }
 
 const onKeyDown = (e: KeyboardEvent) => {
   if (!props.open) return
